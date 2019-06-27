@@ -5,7 +5,7 @@ Attempting to measure the 427 2^3 S_1 -> 3^3 S_1 highly forbidden transtion in m
 
 
 ## TO Do
-- [ ] thing 1
+- [ ] include core BEC as submodule for easy install
 - [ ] thing 2
 
 
