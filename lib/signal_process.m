@@ -94,23 +94,78 @@ sig.cal = data.sync.cal.N_atoms;
 %% Circular number difference
 temp = [];
 cen = [1.5,4.9].*1e-3;
-r = 30.5e-3;
-theta = pi/4;%the angle about which to partiction
-t_window_min = 0.5;
-t_window_max = 6.3;
+r = 20.5e-3;
+theta = 0;%the angle about which to partiction between 0 and pi from x-axis
+t_window_min = 0.0;
+t_window_max = 10.0;
 
 for c_data = data.tdc.counts_txy
     tdc_data = cell2mat(c_data);
     mask=tdc_data(:,1)>t_window_min & tdc_data(:,1)<t_window_max...
         & sqrt((tdc_data(:,2)-cen(1)).^2+(tdc_data(:,3)-cen(2)).^2)<r;
     data_windowed = tdc_data(mask,:);
-    angs = atan(data_windowed(:,3)./data_windowed(:,2));
+    y_data = data_windowed(:,3)-cen(2);
+    x_data = data_windowed(:,2)-cen(1);
+    angs = cart2pol(x_data,y_data);
     atom_num = size(data_windowed,1); %atom number in given window
-    num_dif = 2.*sum(angs>theta & angs<theta+pi) - atom_num;%x cut
+    num_dif = 2.*sum(angs<theta & angs>theta-pi) - atom_num;%x cut
 %     num_dif = sum(data_windowed(:,3)>-0e-3) - sum(data_windowed(:,3)<-0e-3);
     temp = [temp,num_dif];%num_dif./atom_num
 
 end
 sig.cal = temp(data.sync.cal.mask);
 sig.raw = temp(data.sync.msr.mask);
+%%
+shot_lim = 1817;
+temp_msr = [];
+temp_cal = [];
+cen = [1.5,4.9].*1e-3;
+r = 20.5e-3;
+t_window_min = 0.5;
+t_window_max = 6.3;%6.3;
+
+for  c_data = data.tdc.counts_txy(data.sync.msr.mask(1:shot_lim))
+    tdc_data = cell2mat(c_data);
+    mask=tdc_data(:,1)>t_window_min & tdc_data(:,1)<t_window_max...
+        & sqrt((tdc_data(:,2)-cen(1)).^2+(tdc_data(:,3)-cen(2)).^2)<r;
+    data_windowed = tdc_data(mask,:);
+    temp_msr = [temp_msr;data_windowed];
+end
+for  c_data = data.tdc.counts_txy(data.sync.cal.mask(1:shot_lim))
+    tdc_data = cell2mat(c_data);
+    mask=tdc_data(:,1)>t_window_min & tdc_data(:,1)<t_window_max...
+        & sqrt((tdc_data(:,2)-cen(1)).^2+(tdc_data(:,3)-cen(2)).^2)<r;
+    data_windowed = tdc_data(mask,:);
+    temp_cal = [temp_cal;data_windowed];
+end
+% Bin the data:
+pts = linspace(-40e-3, 40e-3, 101);
+N_m = histcounts2(temp_msr(:,3), temp_msr(:,2), pts, pts);
+N_c = histcounts2(temp_cal(:,3), temp_cal(:,2), pts, pts);
+figure(44)
+subplot(2,1,1)
+imagesc(pts.*1e3, pts.*1e3, N_m)
+title('measure avg')
+xlabel('x (mm)')
+ylabel('y (mm)')
+axis equal;
+colorbar
+set(gca, 'XLim', pts([1 end]).*1e3, 'YLim', pts([1 end]).*1e3, 'YDir', 'normal');
+subplot(2,1,2)
+imagesc(pts.*1e3, pts.*1e3, N_c)
+title('calibration avg')
+xlabel('x (mm)')
+ylabel('y (mm)')
+axis equal;
+colorbar
+set(gca, 'XLim', pts([1 end]).*1e3, 'YLim', pts([1 end]).*1e3, 'YDir', 'normal');
+% imagesc(pts.*1e3, pts.*1e3, N_m./size(temp_msr,1)-N_c./size(temp_cal,1))
+figure(67)
+imagesc(pts.*1e3, pts.*1e3, N_m./sum(data.sync.msr.mask)-N_c./sum(data.sync.cal.mask))
+title('hist diff')
+xlabel('x (mm)')
+ylabel('y (mm)')
+axis equal;
+colorbar
+set(gca, 'XLim', pts([1 end]).*1e3, 'YLim', pts([1 end]).*1e3, 'YDir', 'normal');
 end

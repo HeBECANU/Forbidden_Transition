@@ -13,9 +13,9 @@ k_fracs = linspace(0,2,100);
 sample_fracs = zeros(size(k_fracs));
 num_tests = length(k_fracs);
 % Misc settings
-verbose = 0;
-
-for kidx = 1:num_tests
+verbose = 2;
+%%
+for kidx = 45;%1:num_tests
     % set independent variable
     knife_vel=k_fracs(kidx)*recoil_k1;
     
@@ -57,11 +57,24 @@ for kidx = 1:num_tests
 
         subplot(3,1,2)
         scatter3(k_outcoupled(:,1),k_outcoupled(:,2),k_outcoupled(:,3),'k.')
-
+        xlabel('x')
+        ylabel('y')
+        zlabel('z')
+        
         subplot(3,1,3)
         scatter3(k_final(:,1),k_final(:,2),k_final(:,3),'k.')
+        xlabel('x')
+        ylabel('y')
+        zlabel('z')
+        
+        det_pos = k_final.*const.hb/const.mhe.*0.417*1e9*1e3;
+        figure(3)
+        scatter(det_pos(:,1),det_pos(:,2))
+        xlabel('x (mm)')
+        ylabel('y (mm)')
     end
 end
+%%
 figure(2)
 plot(k_fracs,sample_fracs,'k.')
 hold on

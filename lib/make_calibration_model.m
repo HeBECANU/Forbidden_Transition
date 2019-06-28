@@ -65,19 +65,30 @@ function calib  = make_calibration_model(data,opts)
     
     subplot(3,1,3)
 
-    plot(plot_mdl_X,plot_mdl_Y,'.')
+    plot(plot_mdl_X-mean(plot_mdl_X),plot_mdl_Y,'.')
 
     hold on
-    
-    xlabel(sprintf('f (MHz)'))
+
+    nbins=50;
+    X_bin=linspace(min(plot_mdl_X),max(plot_mdl_X),nbins);
+    X_bin_width=(-min(plot_mdl_X)+max(plot_mdl_X))/nbins;
+    Y_val = zeros(nbins,2);
+    for ii = 1:nbins
+       bin_cen = X_bin(ii);
+       indx = abs(plot_mdl_X-bin_cen)<X_bin_width/2;
+       Y_val(ii,1) = mean(plot_mdl_Y(indx));
+       Y_val(ii,2) = std(plot_mdl_Y(indx));
+    end
+    errorbar(X_bin-mean(plot_mdl_X),Y_val(:,1),Y_val(:,2),'.');
+    yy = smooth(X_bin,Y_val(:,1));
+    plot(X_bin-mean(plot_mdl_X),yy)
+    xlabel(sprintf('f-%u (MHz)',mean(plot_mdl_X)))
     ylabel('Signal')
 
     title('Calibrated spectra')    
-
+    legend('Raw data','Binned data','Smoothed Response')
     filename2 = fullfile(opts.out_dir,sprintf('%s_diagnostic',mfilename));
     saveas(f1,[filename2,'.fig']);
     saveas(f1,[filename2,'.png'])
-
     header({1,'Done.'})
-
-    end
+end

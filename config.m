@@ -54,7 +54,7 @@ opts.ai.verbose = 1;
 opts.ai.plots=1;
 
 % Default values, should be overriden by local
-opts.ai.num_files = 60; %nan
+opts.ai.num_files = nan; %nan
 opts.ai.pd_offset = -0.065;
 opts.ai.high_thresh = 8e-3;
 opts.ai.srate = 20000.00;
