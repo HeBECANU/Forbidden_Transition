@@ -135,24 +135,30 @@ function sync_data = match_timestamps(data,opts)
     
     %Create the masks
     cal_mask = ctrl_mask;
+    no_atom_mask = strcmp(data.lv.shot_class,'stage_2');%mask out the no atom shots
     if isfield(elogs,'master')
-        msr_mask = ~ctrl_mask & wm_set_mask' & elogs.master;
+        msr_mask = ~ctrl_mask & wm_set_mask' & elogs.master & ~no_atom_mask';
     else
-        msr_mask = ~ctrl_mask & wm_set_mask';
+        msr_mask = ~ctrl_mask & wm_set_mask' & ~no_atom_mask';
     end
+    
+    no_atom_mask = no_atom_mask' & ~ctrl_mask & wm_set_mask';
     
     % Break out calibration % measurement blocks
     sync_cal = struct_mask(sync_shots,cal_mask);
     sync_msr = struct_mask(sync_shots,msr_mask);
+    sync_no = struct_mask(sync_shots,no_atom_mask);
         
 
     %% Write the output
     sync_data.shots = sync_shots;
     sync_data.cal = sync_cal;
     sync_data.msr = sync_msr;
+    sync_data.no_atoms = sync_no;
     
     sync_data.cal.mask = cal_mask;
     sync_data.msr.mask = msr_mask;
+    sync_data.no_atoms.mask = no_atom_mask;
 
     
     header({1,'Done.'})

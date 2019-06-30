@@ -12,7 +12,7 @@ data = [];
 % add all subfolders to the path
 % % Setting up
 
-data_dir = 'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190628_forbidden_5\';
+data_dir = 'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190628_forbidden_6\';
 
 this_folder = fileparts(which(mfilename));
 addpath(genpath(this_folder));

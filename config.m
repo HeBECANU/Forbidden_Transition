@@ -140,7 +140,7 @@ opts.atom_laser.pulse_twindow=opts.atom_laser.pulsedt*0.95;
 opts.atom_laser.xylim=opts.tdc.txylim(2:3,:); %set same lims for pulses as import
 %% Error handling
 opts.check.min_counts = 1e3;
-opts.check.wm_tolerance = 2;
+opts.check.wm_tolerance = 200;
 opts.check.num_cal_bins = 20;
 
 %% Peak detection

@@ -24,7 +24,7 @@ function calib  = make_calibration_model(data,opts)
     mdl_mask = interp1(data.sync.cal.tdc_time,data.sync.cal.N_atoms,data.sync.msr.tdc_time);
     out_mask = ~isnan(data.signal.cal);
     calib.mdl = interp1(data.sync.cal.tdc_time(out_mask),data.signal.cal(out_mask),data.sync.msr.tdc_time);     
-    calib.signal = calib.mdl-data.signal.raw;
+    calib.signal = -calib.mdl+data.signal.raw;
     calib.low_count_mask = mdl_mask > opts.check.min_counts;
     calib.probe_set = data.sync.msr.probe_set;
 %     calib.signal = calib.signal(calib.low_count_mask);
@@ -77,16 +77,17 @@ function calib  = make_calibration_model(data,opts)
        bin_cen = X_bin(ii);
        indx = abs(plot_mdl_X-bin_cen)<X_bin_width/2;
        Y_val(ii,1) = mean(plot_mdl_Y(indx));
-       Y_val(ii,2) = std(plot_mdl_Y(indx));
+       Y_val(ii,2) = std(plot_mdl_Y(indx))./sqrt(sum(indx));
     end
     errorbar(X_bin-mean(plot_mdl_X),Y_val(:,1),Y_val(:,2),'.');
-    yy = smooth(X_bin,Y_val(:,1));
+    yy = gaussfilt(X_bin,Y_val(:,1),7);
     plot(X_bin-mean(plot_mdl_X),yy)
     xlabel(sprintf('f-%u (MHz)',mean(plot_mdl_X)))
     ylabel('Signal')
 
     title('Calibrated spectra')    
     legend('Raw data','Binned data','Smoothed Response')
+    grid on
     filename2 = fullfile(opts.out_dir,sprintf('%s_diagnostic',mfilename));
     saveas(f1,[filename2,'.fig']);
     saveas(f1,[filename2,'.png'])

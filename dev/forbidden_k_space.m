@@ -248,4 +248,18 @@ leak_per_atom=leak_rate(1e-6,knife_vel)
 total_leak=leak_per_atom*1e6
 
 
+%% now to turn velocity into mhz above trap bottom
+
+% \ub =1.399 625 MHz/G
+% \delta E = - \mu · B 
+% \mu= -\mu_B * g^{J} /\hbar
+% freq_drive=  \mu_B * g^{2s}_J =2.8MHz/G
+
+%E=1/2 m v^2 
+% B= E/\mu 
+% freq = mu_B * g^{2s}_J*E/\mu 
+% freq = mu_B * g^{2s}_J*E *\hbar / \mu_B * g^{J}
+% freq = E *\hbar
+
+
 
