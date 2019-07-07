@@ -1,47 +1,53 @@
 function output=forbidden_signal_masked_num(data,import_opts)
-
-not_empty_shots=~cellfun(@isempty,data.mcp_tdc.counts_txy);
-all_txy=cat(1,data.mcp_tdc.counts_txy{not_empty_shots});
+do_2d_plot=false;
 
 num_shots=numel(data.mcp_tdc.counts_txy);
-all_txy=masktxy_square(all_txy,import_opts.square_mask);
+if do_2d_plot
 
-all_txy=masktxy_2d_circle(all_txy,import_opts.circ_mask);
+    not_empty_shots=~cellfun(@isempty,data.mcp_tdc.counts_txy);
+    all_txy=cat(1,data.mcp_tdc.counts_txy{not_empty_shots});
 
-dyn_range_pow=0.2;
+    
+    all_txy=masktxy_square(all_txy,import_opts.square_mask);
+
+    all_txy=masktxy_2d_circle(all_txy,import_opts.circ_mask);
+
+    dyn_range_pow=0.2;
 
 
-num_bins=import_opts.plot.nbins;
-edge_x=linspace(min(import_opts.plot.lim.x),max(import_opts.plot.lim.x),num_bins);
-edge_y=linspace(min(import_opts.plot.lim.y),max(import_opts.plot.lim.y),num_bins);
+    num_bins=import_opts.plot.nbins;
+    edge_x=linspace(min(import_opts.plot.lim.x),max(import_opts.plot.lim.x),num_bins);
+    edge_y=linspace(min(import_opts.plot.lim.y),max(import_opts.plot.lim.y),num_bins);
 
-spatial_blur=import_opts.plot.blur;
-bin_area=(range(import_opts.plot.lim.x)/num_bins)*(range(import_opts.plot.lim.x)/num_bins);
-[counts,centers]=hist3(all_txy(:,2:3),'edges',{edge_x,edge_y});
-counts=counts/bin_area;
-counts=counts/num_shots;
+    spatial_blur=import_opts.plot.blur;
+    bin_area=(range(import_opts.plot.lim.x)/num_bins)*(range(import_opts.plot.lim.x)/num_bins);
+    [counts,centers]=hist3(all_txy(:,2:3),'edges',{edge_x,edge_y});
+    counts=counts/bin_area;
+    counts=counts/num_shots;
 
-%imagesc seems to plot the wrong way round so we transpose here
+    %imagesc seems to plot the wrong way round so we transpose here
 
-if import_opts.plot.cmp_dyn_range
-    counts=counts.^dyn_range_pow;
-end
-if  ~spatial_blur==0
-    counts=imgaussfilt(counts,spatial_blur);
-end
-stfig('counts during probe')
-imagesc(10^3*centers{1},10^3*centers{2},transpose(counts))
-colormap(viridis())
-set(gca,'Ydir','normal')
-set(gcf,'Color',[1 1 1]);
-title('Spatial Dist. TOP')
-xlabel('X(mm)')
-ylabel('Y(mm)')
-h=colorbar;
-if import_opts.plot.cmp_dyn_range
-xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
-else
-xlabel(h,'Count Density (m^{-2})')
+    if import_opts.plot.cmp_dyn_range
+        counts=counts.^dyn_range_pow;
+    end
+    if  ~spatial_blur==0
+        counts=imgaussfilt(counts,spatial_blur);
+    end
+    stfig('counts during probe')
+    imagesc(10^3*centers{1},10^3*centers{2},transpose(counts))
+    colormap(viridis())
+    set(gca,'Ydir','normal')
+    set(gcf,'Color',[1 1 1]);
+    title('Spatial Dist. TOP')
+    xlabel('X(mm)')
+    ylabel('Y(mm)')
+    h=colorbar;
+    if import_opts.plot.cmp_dyn_range
+    xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
+    else
+    xlabel(h,'Count Density (m^{-2})')
+    end
+
 end
 
 %% mask each shot
@@ -71,7 +77,8 @@ num_diff.y=sum(quadrant_num(:,[1,3]),2)-sum(quadrant_num(:,[2,4]),2);
 num_diff.quad=sum(quadrant_num(:,[1,4]),2)-sum(quadrant_num(:,[2,3]),2);
 
 is_cal=data.mcp_tdc.probe.calibration;
-is_cal(isnan(is_cal))=1;
+%is_cal(isnan(is_cal))=1;
+is_cal(isnan(is_cal))=0;
 
 is_freq_good=data.wm_log.proc.probe.freq.act.std<5 &...
     (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<5 &...
@@ -87,7 +94,8 @@ signal_unbinned.freq=probe_freq(is_freq_good);
 
 
 signal_bined=[];
-probe_freq_bins=col_vec(linspace(-25,20,9));
+probe_freq_bins=col_vec(linspace(-70,70,60));
+%probe_freq_bins=col_vec(linspace(-25,20,9));
 iimax=numel(probe_freq_bins)-1;
 for ii=1:iimax
     signal_bined.freq_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];

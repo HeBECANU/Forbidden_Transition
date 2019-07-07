@@ -259,7 +259,7 @@ total_leak=leak_per_atom*1e6
 % B= E/\mu 
 % freq = mu_B * g^{2s}_J*E/\mu 
 % freq = mu_B * g^{2s}_J*E *\hbar / \mu_B * g^{J}
-% freq = E *\hbar
+% freq = E /h
 
 
 

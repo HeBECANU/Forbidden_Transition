@@ -24,7 +24,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190703_forbidden_427';
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190704_forbidden_long interrogation\';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -116,7 +116,7 @@ data=match_labview_log(data,anal_opts)
 %%
 
 anal_opts.wm_log.dir=anal_opts.tdc_import.dir;
-anal_opts.wm_log.force_reimport=true;
+anal_opts.wm_log.force_reimport=false;
 wm_log_name='log_wm_';
 wm_logs=dir(fullfile(anal_opts.wm_log.dir,cat(2,wm_log_name,'*.txt')));
 anal_opts.wm_log.names={wm_logs.name};
@@ -157,7 +157,8 @@ import_opts.signal.plot.blur=3;
 import_opts.signal.plot.cmp_dyn_range=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
-tlim=[0.5,6.2];
+%tlim=[0.5,6.2];
+tlim=[5,22.5];
 import_opts.signal.square_mask=[tlim;tmp_xlim;tmp_ylim];
 import_opts.signal.circ_mask=[[0,0,35e-3,1];
                               [35e-3,5e-3,7e-3,0];
