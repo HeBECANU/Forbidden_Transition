@@ -1,7 +1,8 @@
 function al_pulses=bin_al_pulses(anal_opts,data)
+% warning al_pulses.pos_stat will be removed in a furture release
 
 
-iimax=size(data.tdc.counts_txy,2);
+iimax=size(data.mcp_tdc.counts_txy,2);
 al_pulses=[];
 al_pulses.pulsedt=anal_opts.pulsedt;
 al_pulses.window=nan(anal_opts.pulses,3,2); %initalize
@@ -9,34 +10,34 @@ al_pulses.num_counts=nan(iimax,anal_opts.pulses);
 al_pulses.pos.mean=nan(iimax,anal_opts.pulses,3);
 al_pulses.pos.std=nan(iimax,anal_opts.pulses,3);
 
-fprintf('binning pulses in files %04u:%04u',size(data.tdc.counts_txy,2),0)
+fprintf('binning pulses in files %04u:%04u',size(data.mcp_tdc.counts_txy,2),0)
 first_good_shot=true;
 for shot=1:iimax
-        if data.tdc.all_ok(shot)
+        if data.mcp_tdc.all_ok(shot)
             for pulse=1:anal_opts.pulses
                 %set up time window centered arround t0
                 t_pulse_cen=anal_opts.t0+anal_opts.pulsedt...
                     *(anal_opts.start_pulse+pulse-2);
                 trange=t_pulse_cen+anal_opts.pulse_twindow*[-0.5,0.5];
                 pulse_win_txy=[trange;anal_opts.xylim]; 
-                counts_pulse=masktxy(data.tdc.counts_txy{shot},pulse_win_txy);
-%                 if anal_opts.plot.all
-%                     stfig;
-%                     set(gcf,'Color',[1 1 1]);
-%                     subplot(3,1,1)
-%                     histogram(counts_pulse(:,1),100)
-%                     xlabel('t')
-%                     title('full')
-%                     subplot(3,1,2)
-%                     histogram(counts_pulse(:,2),100)
-%                     xlabel('x')
-%                     title('full')
-%                     subplot(3,1,3)
-%                     histogram(counts_pulse(:,3),100)
-%                     xlabel('y')
-%                     title('full')
-%                     pause(0.01)
-%                 end
+                counts_pulse=masktxy_square(data.mcp_tdc.counts_txy{shot},pulse_win_txy);
+                if anal_opts.plot.all
+                    stfig;
+                    set(gcf,'Color',[1 1 1]);
+                    subplot(3,1,1)
+                    histogram(counts_pulse(:,1),100)
+                    xlabel('t')
+                    title('full')
+                    subplot(3,1,2)
+                    histogram(counts_pulse(:,2),100)
+                    xlabel('x')
+                    title('full')
+                    subplot(3,1,3)
+                    histogram(counts_pulse(:,3),100)
+                    xlabel('y')
+                    title('full')
+                    pause(0.01)
+                end
                 if first_good_shot
                     %only need to store this on first shot becasue the same for
                     %all shots
@@ -65,7 +66,7 @@ for shot=1:iimax
             est_t0=anal_opts.t0+mean_cen_time;
             warning('pulses are not centered in time pehaps t0 should be %.5f',est_t0)
         end
-        end%is data.tdc.all_ok
+        end%is data.mcp_tdc.all_ok
         if mod(shot,10)==0,fprintf('\b\b\b\b%04u',shot),end     
 %to set the pulse t0 right it can be handy to uncomment the next line
 %
@@ -89,7 +90,7 @@ end
 
 %% Could check that the pulse time is reasonable usign the fft of the count rate
 % 
-% tmp_dat=data.tdc.counts_txy{1};
+% tmp_dat=data.mcp_tdc.counts_txy{1};
 % 
 % opt_in.xdat=tmp_dat(:,1);
 % opt_in.max=2.0;
