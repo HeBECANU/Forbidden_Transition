@@ -10,7 +10,7 @@ addpath(this_folder)
 addpath(path_to_genpath)
 addpath(genpath_exclude(fullfile(this_folder,'lib'),'\.')) %dont add hidden folders
 addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
-addpath(genpath_exclude(fullfile(this_folder,'bin'),'\.'))
+%addpath(genpath_exclude(fullfile(this_folder,'bin'),'\.'))
 
 
 
@@ -26,7 +26,7 @@ f23p2_33s1=f23s1_33s1-f23s1_23p2;
 recoil_vel1=freq_to_recoil_vel_he(f23s1_33s1); %absorb 427nm photon
 recoil_vel2=freq_to_recoil_vel_he(f23p2_33s1); %emit 706nm photon
 recoil_vel3=freq_to_recoil_vel_he(f23s1_23p2);%emit 1083nm photon
-knife_vel=recoil_vel1*1;
+knife_vel=recoil_vel1*1.2;
 det_radius=70e-3/2;
 
 %in the limit of a infinitesimal size detector then you want the recoil velocity at the peak of the radial count density
