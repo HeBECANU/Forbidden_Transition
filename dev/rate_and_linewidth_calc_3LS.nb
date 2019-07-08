@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     59082,       1599]
-NotebookOptionsPosition[     52958,       1493]
-NotebookOutlinePosition[     53309,       1508]
-CellTagsIndexPosition[     53266,       1505]
+NotebookDataLength[     57872,       1561]
+NotebookOptionsPosition[     51750,       1455]
+NotebookOutlinePosition[     52101,       1470]
+CellTagsIndexPosition[     52058,       1467]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,30 +24,26 @@ Cell[TextData[{
 Denote the metastable state population ",
  Cell[BoxData[
   FormBox[
-   SubscriptBox["\[Rho]", "11"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+   SubscriptBox["\[Rho]", "11"], TraditionalForm]],ExpressionUUID->
   "8b6a8a8f-4608-49aa-bf9c-7be382489104"],
  ", the excited state ",
  Cell[BoxData[
   FormBox[
-   SubscriptBox["\[Rho]", "22"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+   SubscriptBox["\[Rho]", "22"], TraditionalForm]],ExpressionUUID->
   "ecc759a6-8309-4cb6-b352-618bb7f5f556"],
  ", and the cooling state ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox["\[Rho]", "33"], ".", " "}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "3f40b8e1-374a-40bc-beff-18d9d487106a"],
+  ExpressionUUID->"3f40b8e1-374a-40bc-beff-18d9d487106a"],
  "There is also a loss channel from the excited state to other states in the \
 2p manifold - denote these collectively by ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox["\[Rho]", "44"], ".", " "}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "1c3063f6-d90e-4ebf-834d-8c144a1420f0"],
+  ExpressionUUID->"1c3063f6-d90e-4ebf-834d-8c144a1420f0"],
  "Assume that the other 2p states don\[CloseCurlyQuote]t decay back to the \
 trapped metastable state, and the upper cooling state always decays to the \
 metastable state*, We have the rates\n",
@@ -71,24 +67,21 @@ metastable state*, We have the rates\n",
     SubscriptBox["A", 
      RowBox[{"31", " "}]], "=", " ", 
     RowBox[{"1.02", 
-     SuperscriptBox["e", "7"], "Hz"}]}], TraditionalForm]}],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SuperscriptBox["e", "7"], "Hz"}]}], TraditionalForm]}],ExpressionUUID->
   "fc716885-db07-4e59-a142-f1103946d810"],
  "\nWith an additional loss channel from the excited ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SuperscriptBox["3", "3"], 
-    SubscriptBox["S", "1"]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    SubscriptBox["S", "1"]}], TraditionalForm]],ExpressionUUID->
   "fed7f15b-78b3-4136-b1e9-9b6dfa9a6991"],
  "state to the m=0,1 states of the ",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SuperscriptBox["2", "3"], 
-    SubscriptBox["P", "2"], " "}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    SubscriptBox["P", "2"], " "}], TraditionalForm]],ExpressionUUID->
   "71a20caa-4103-4453-a760-1bcce6d9d56b"],
  "state with rate ",
  Cell[BoxData[
@@ -96,8 +89,7 @@ metastable state*, We have the rates\n",
    RowBox[{
     SubscriptBox["A", "24"], " ", "=", " ", 
     RowBox[{"1.2", 
-     SuperscriptBox["e", "7"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SuperscriptBox["e", "7"]}]}], TraditionalForm]],ExpressionUUID->
   "aa515e7f-8b76-46ef-806f-68762298bd4b"],
  "Hz\nand from the metastable state to the true ground state with rate\n",
  Cell[BoxData[
@@ -106,15 +98,13 @@ metastable state*, We have the rates\n",
     SubscriptBox["A", "14"], "=", "  ", 
     RowBox[{"1.272", 
      SuperscriptBox["e", 
-      RowBox[{"-", "4"}]], "Hz"}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+      RowBox[{"-", "4"}]], "Hz"}]}], TraditionalForm]],ExpressionUUID->
   "14cdd342-37a2-48b7-a926-10c9823fc687"],
  "\n\nThe populations evolving under the optical Bloch equations read:\n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "11"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "11"], TraditionalForm]],ExpressionUUID->
   "b1519eec-a546-4848-a480-15668213d8c2"],
  " ",
  Cell[BoxData[
@@ -133,14 +123,12 @@ metastable state*, We have the rates\n",
        RowBox[{
         SubscriptBox["\[Rho]", "21"], "-", 
         SubscriptBox["\[Rho]", "12"]}], ")"}]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "0fa8644e-036f-4cf0-a11b-b999082267e3"],
+  ExpressionUUID->"0fa8644e-036f-4cf0-a11b-b999082267e3"],
  " \n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "22"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "22"], TraditionalForm]],ExpressionUUID->
   "d2b8d94c-088e-4265-b380-8febb1ab579c"],
  " ",
  Cell[BoxData[
@@ -161,14 +149,12 @@ metastable state*, We have the rates\n",
        RowBox[{
         SubscriptBox["\[Rho]", "21"], "-", 
         SubscriptBox["\[Rho]", "12"]}], ")"}]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "f4067c2e-461e-4f1f-bb6d-bac4ab98b402"],
+  ExpressionUUID->"f4067c2e-461e-4f1f-bb6d-bac4ab98b402"],
  " \n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "33"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "33"], TraditionalForm]],ExpressionUUID->
   "b5c11b05-e0b2-4457-93d6-3e2c248d4eea"],
  " ",
  Cell[BoxData[
@@ -180,8 +166,7 @@ metastable state*, We have the rates\n",
       SubscriptBox["\[Rho]", "22"]}], "-", " ", 
      RowBox[{
       SubscriptBox["A", "13"], 
-      SubscriptBox["\[Rho]", "33"]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+      SubscriptBox["\[Rho]", "33"]}]}]}], TraditionalForm]],ExpressionUUID->
   "295334e5-65de-4d5a-a739-94ae5363356f"],
  "\n",
  Cell[BoxData[
@@ -191,15 +176,13 @@ metastable state*, We have the rates\n",
      OverscriptBox["\[Rho]", "."], "44"], "=", " ", 
     RowBox[{
      SubscriptBox["A", "24"], 
-     SubscriptBox["\[Rho]", "22"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SubscriptBox["\[Rho]", "22"]}]}], TraditionalForm]],ExpressionUUID->
   "8c4c3ebb-a906-4dda-b660-bdb32ca6404f"],
  "\nWith coherences\n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "12"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "12"], TraditionalForm]],ExpressionUUID->
   "ceebd7c0-e8c1-48ef-a2f0-a21542f117d7"],
  " ",
  Cell[BoxData[
@@ -222,16 +205,14 @@ metastable state*, We have the rates\n",
        RowBox[{
         SubscriptBox["\[Rho]", "22"], "-", 
         SubscriptBox["\[Rho]", "11"]}], ")"}]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "45e1f9d4-eefa-49c4-af2a-659aa36ea3ac"],
+  ExpressionUUID->"45e1f9d4-eefa-49c4-af2a-659aa36ea3ac"],
  "\n",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox[
      OverscriptBox["\[Rho]", "."], "13"], "=", 
-    RowBox[{"-", " "}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    RowBox[{"-", " "}]}], TraditionalForm]],ExpressionUUID->
   "df847c45-8c0b-4a94-a0eb-d2cd88b2d62c"],
  Cell[BoxData[
   FormBox[
@@ -245,8 +226,7 @@ metastable state*, We have the rates\n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "23"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "23"], TraditionalForm]],ExpressionUUID->
   "b54630da-1f10-4abd-9aa3-5b0119f7cc0c"],
  " ",
  Cell[BoxData[
@@ -256,8 +236,7 @@ metastable state*, We have the rates\n",
      RowBox[{"-", 
       FractionBox[
        SubscriptBox["\[CapitalGamma]", "2"], "2"]}], 
-     SubscriptBox["\[Rho]", "23"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SubscriptBox["\[Rho]", "23"]}]}], TraditionalForm]],ExpressionUUID->
   "73ba078d-cdba-42a4-abdd-b323706ddd94"],
  " \n",
  Cell[BoxData[
@@ -270,8 +249,7 @@ metastable state*, We have the rates\n",
       FractionBox[
        SubscriptBox[
         RowBox[{"\[CapitalGamma]", "'"}], "2"], "2"]}], 
-     SubscriptBox["\[Rho]", "44"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SubscriptBox["\[Rho]", "44"]}]}], TraditionalForm]],ExpressionUUID->
   "dd5e1c66-f0b5-456b-a88d-4905fd5f51e3"],
  " \nWhere ",
  Cell[BoxData[
@@ -299,14 +277,12 @@ metastable state*, We have the rates\n",
        RowBox[{"\[Pi]", " ", 
         SuperscriptBox[
          SubscriptBox["w", "0"], "2"]}]]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "17c462ea-ec8a-47b7-9ec5-9a73bd4751c0"],
+  ExpressionUUID->"17c462ea-ec8a-47b7-9ec5-9a73bd4751c0"],
  "\n\nLet us approximate these rates by the respective linewidths, noting ",
  Cell[BoxData[
   FormBox[
    RowBox[{
-    SubscriptBox["A", "21"], " "}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    SubscriptBox["A", "21"], " "}], TraditionalForm]],ExpressionUUID->
   "537e9fb7-d8df-485c-8cfc-0b1b43d960c3"],
  "is absolutely tiny, and approximating (for simplicity for now) ",
  Cell[BoxData[
@@ -315,8 +291,7 @@ metastable state*, We have the rates\n",
     RowBox[{
      SubscriptBox["A", 
       RowBox[{"23", " "}]], "+", " ", 
-     SubscriptBox["A", "24"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SubscriptBox["A", "24"]}]}], TraditionalForm]],ExpressionUUID->
   "e8f42fa3-0544-4564-9fd7-30e8d8b8d08c"],
  ", and ",
  Cell[BoxData[
@@ -333,8 +308,7 @@ metastable state*, We have the rates\n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "11"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "11"], TraditionalForm]],ExpressionUUID->
   "4fbc7aaa-2b80-4b3f-8f63-ae5f633b8e68"],
  " ",
  Cell[BoxData[
@@ -350,14 +324,12 @@ metastable state*, We have the rates\n",
         RowBox[{
          SubscriptBox["\[Rho]", "21"], "-", 
          SubscriptBox["\[Rho]", "12"]}], ")"}], "2"]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "f50875f9-c82e-4c1d-b322-96f790c33125"],
+  ExpressionUUID->"f50875f9-c82e-4c1d-b322-96f790c33125"],
  " \n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "22"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "22"], TraditionalForm]],ExpressionUUID->
   "79d3361b-9138-43d8-9414-f13884a16f2a"],
  " ",
  Cell[BoxData[
@@ -373,14 +345,12 @@ metastable state*, We have the rates\n",
         RowBox[{
          SubscriptBox["\[Rho]", "21"], "-", 
          SubscriptBox["\[Rho]", "12"]}], ")"}], "2"]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "5dc5838e-8763-4513-93f9-57a361763a80"],
+  ExpressionUUID->"5dc5838e-8763-4513-93f9-57a361763a80"],
  " \n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "33"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "33"], TraditionalForm]],ExpressionUUID->
   "543d0d90-4d25-478c-86dc-d6a02f8e8a70"],
  " ",
  Cell[BoxData[
@@ -392,8 +362,7 @@ metastable state*, We have the rates\n",
       SubscriptBox["\[Rho]", "22"]}], "-", " ", 
      RowBox[{
       SubscriptBox["\[CapitalGamma]", "3"], 
-      SubscriptBox["\[Rho]", "33"]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+      SubscriptBox["\[Rho]", "33"]}]}]}], TraditionalForm]],ExpressionUUID->
   "8fd4e89c-f368-4ba8-a5ab-1783c61319de"],
  "\n",
  Cell[BoxData[
@@ -407,15 +376,13 @@ metastable state*, We have the rates\n",
       SubscriptBox["\[Rho]", "22"]}], "\[TildeEqual]", 
      RowBox[{
       FractionBox["L", "2"], 
-      SubscriptBox["\[Rho]", "22"]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+      SubscriptBox["\[Rho]", "22"]}]}]}], TraditionalForm]],ExpressionUUID->
   "a7c4a8f4-c20a-48e3-82eb-7564ba50f211"],
  "\nWith coherences\n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "12"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "12"], TraditionalForm]],ExpressionUUID->
   "5facce01-be8c-463c-8008-963319439d94"],
  " ",
  Cell[BoxData[
@@ -436,16 +403,14 @@ metastable state*, We have the rates\n",
        RowBox[{
         SubscriptBox["\[Rho]", "22"], "-", 
         SubscriptBox["\[Rho]", "11"]}], ")"}]}]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
-  "e2cf320a-4674-4155-a3d4-7b78bd7ac232"],
+  ExpressionUUID->"e2cf320a-4674-4155-a3d4-7b78bd7ac232"],
  "\n",
  Cell[BoxData[
   FormBox[
    RowBox[{
     SubscriptBox[
      OverscriptBox["\[Rho]", "."], "13"], "=", 
-    RowBox[{"-", " "}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    RowBox[{"-", " "}]}], TraditionalForm]],ExpressionUUID->
   "4fd96fdc-b433-4450-b5d7-3b16169db9d1"],
  Cell[BoxData[
   FormBox[
@@ -459,8 +424,7 @@ metastable state*, We have the rates\n",
  Cell[BoxData[
   FormBox[
    SubscriptBox[
-    OverscriptBox["\[Rho]", "."], "23"], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+    OverscriptBox["\[Rho]", "."], "23"], TraditionalForm]],ExpressionUUID->
   "ce634290-d050-4979-b453-b92b5429755d"],
  " ",
  Cell[BoxData[
@@ -470,8 +434,7 @@ metastable state*, We have the rates\n",
      RowBox[{"-", 
       FractionBox[
        SubscriptBox["\[CapitalGamma]", "2"], "2"]}], 
-     SubscriptBox["\[Rho]", "23"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SubscriptBox["\[Rho]", "23"]}]}], TraditionalForm]],ExpressionUUID->
   "85e18974-3cb3-4c55-8030-9f0acd0b3c56"],
  " \n",
  Cell[BoxData[
@@ -484,8 +447,7 @@ metastable state*, We have the rates\n",
       FractionBox[
        SubscriptBox[
         RowBox[{"\[CapitalGamma]", "'"}], "2"], "2"]}], 
-     SubscriptBox["\[Rho]", "44"]}]}], TraditionalForm]],
-  FormatType->"TraditionalForm",ExpressionUUID->
+     SubscriptBox["\[Rho]", "44"]}]}], TraditionalForm]],ExpressionUUID->
   "40a24130-ac57-46b9-8f72-a08b99305a0c"],
  "\nOur next task is to solve this system of coupled linear differential \
 equations.\nProbably need to add in by losses from the metastable state, as \
@@ -754,17 +716,17 @@ Cell[BoxData[
     RowBox[{"\[Rho]11", "[", "1", "]"}]}], "/.", 
    RowBox[{"delsolve", "[", 
     RowBox[{"RabiFreq", ",", "0"}], "]"}]}], "\[IndentingNewLine]"}]], "Input",
- CellChangeTimes->{{3.7714864469324102`*^9, 
-  3.7714864664845676`*^9}},ExpressionUUID->"b3b807e2-5e7f-484b-9a22-\
+ CellChangeTimes->{{3.7714864469324102`*^9, 3.7714864664845676`*^9}, 
+   3.771486704059196*^9},ExpressionUUID->"b3b807e2-5e7f-484b-9a22-\
 ceedda2f8a75"],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{"0.0011850002150005645`", "\[VeryThinSpace]", "+", 
    RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], "}"}]], "Output",
- CellChangeTimes->{{3.7714864498900003`*^9, 
-  3.7714864669532366`*^9}},ExpressionUUID->"3c401921-c41c-4b05-ac90-\
-213819cb7c50"]
+ CellChangeTimes->{{3.7714864498900003`*^9, 3.7714864669532366`*^9}, 
+   3.771486709727384*^9},ExpressionUUID->"fbcc4f5b-90d4-445a-9e1a-\
+23131551b6ed"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1507,99 +1469,99 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 16319, 497, 845, "Text",ExpressionUUID->"055afa86-52a6-402b-af9b-3d2f9fe8afac",
+Cell[558, 20, 15065, 459, 845, "Text",ExpressionUUID->"055afa86-52a6-402b-af9b-3d2f9fe8afac",
  InitializationCell->True],
-Cell[16880, 519, 207, 4, 28, "Input",ExpressionUUID->"b75647de-2152-440c-91c9-70044915afb8"],
-Cell[17090, 525, 130, 3, 28, "Input",ExpressionUUID->"3faba84b-b487-4eaf-bfb2-a36952b404a8"],
-Cell[17223, 530, 4592, 116, 281, "Input",ExpressionUUID->"aa55eed0-584e-43af-8a68-386daf2f80e3"],
-Cell[21818, 648, 1090, 30, 32, "Input",ExpressionUUID->"f6150730-4a0e-4a1f-8caa-53ab644880b7"],
-Cell[22911, 680, 2263, 65, 284, "Input",ExpressionUUID->"2898dcfa-3acc-4a4a-8970-acf59190efd8"],
+Cell[15626, 481, 207, 4, 28, "Input",ExpressionUUID->"b75647de-2152-440c-91c9-70044915afb8"],
+Cell[15836, 487, 130, 3, 28, "Input",ExpressionUUID->"3faba84b-b487-4eaf-bfb2-a36952b404a8"],
+Cell[15969, 492, 4592, 116, 281, "Input",ExpressionUUID->"aa55eed0-584e-43af-8a68-386daf2f80e3"],
+Cell[20564, 610, 1090, 30, 32, "Input",ExpressionUUID->"f6150730-4a0e-4a1f-8caa-53ab644880b7"],
+Cell[21657, 642, 2263, 65, 284, "Input",ExpressionUUID->"2898dcfa-3acc-4a4a-8970-acf59190efd8"],
 Cell[CellGroupData[{
-Cell[25199, 749, 345, 9, 48, "Input",ExpressionUUID->"b3b807e2-5e7f-484b-9a22-ceedda2f8a75"],
-Cell[25547, 760, 282, 6, 32, "Output",ExpressionUUID->"3c401921-c41c-4b05-ac90-213819cb7c50"]
+Cell[23945, 711, 368, 9, 48, "Input",ExpressionUUID->"b3b807e2-5e7f-484b-9a22-ceedda2f8a75"],
+Cell[24316, 722, 305, 6, 65, "Output",ExpressionUUID->"fbcc4f5b-90d4-445a-9e1a-23131551b6ed"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[25866, 771, 1438, 36, 52, "Input",ExpressionUUID->"415d3842-1df0-4213-b86f-46dacd09cb6c"],
-Cell[27307, 809, 9087, 178, 345, "Output",ExpressionUUID->"797b67ee-e2cf-4428-9d87-52ac75e24f49"]
+Cell[24658, 733, 1438, 36, 52, "Input",ExpressionUUID->"415d3842-1df0-4213-b86f-46dacd09cb6c"],
+Cell[26099, 771, 9087, 178, 345, "Output",ExpressionUUID->"797b67ee-e2cf-4428-9d87-52ac75e24f49"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[36431, 992, 1179, 32, 124, "Input",ExpressionUUID->"c9510215-aef5-4c88-ada9-26a1166fc0f3"],
-Cell[37613, 1026, 221, 4, 32, "Output",ExpressionUUID->"3a2bfeb1-988f-42ae-98f8-ad68f5997abc"]
+Cell[35223, 954, 1179, 32, 124, "Input",ExpressionUUID->"c9510215-aef5-4c88-ada9-26a1166fc0f3"],
+Cell[36405, 988, 221, 4, 32, "Output",ExpressionUUID->"3a2bfeb1-988f-42ae-98f8-ad68f5997abc"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[37871, 1035, 290, 6, 51, "Input",ExpressionUUID->"1ab36f4d-2983-4329-bd5f-03f5526790cb"],
-Cell[38164, 1043, 198, 3, 32, "Output",ExpressionUUID->"cb571013-2247-4a02-8ceb-0ed0e60fe68a"]
+Cell[36663, 997, 290, 6, 51, "Input",ExpressionUUID->"1ab36f4d-2983-4329-bd5f-03f5526790cb"],
+Cell[36956, 1005, 198, 3, 32, "Output",ExpressionUUID->"cb571013-2247-4a02-8ceb-0ed0e60fe68a"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[38399, 1051, 713, 18, 119, "Input",ExpressionUUID->"46b727d3-a039-44ed-890f-165fe4f00f61"],
-Cell[39115, 1071, 302, 5, 32, "Output",ExpressionUUID->"f5dd9fe3-9d97-4c52-afd7-95996181dce2"]
+Cell[37191, 1013, 713, 18, 119, "Input",ExpressionUUID->"46b727d3-a039-44ed-890f-165fe4f00f61"],
+Cell[37907, 1033, 302, 5, 32, "Output",ExpressionUUID->"f5dd9fe3-9d97-4c52-afd7-95996181dce2"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[39454, 1081, 229, 4, 28, "Input",ExpressionUUID->"99fcca8c-031f-450f-9552-a4cffd919f05"],
-Cell[39686, 1087, 199, 3, 32, "Output",ExpressionUUID->"f7b7632a-d33f-4467-82dd-96cb2d84b6cd"]
+Cell[38246, 1043, 229, 4, 28, "Input",ExpressionUUID->"99fcca8c-031f-450f-9552-a4cffd919f05"],
+Cell[38478, 1049, 199, 3, 32, "Output",ExpressionUUID->"f7b7632a-d33f-4467-82dd-96cb2d84b6cd"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[39922, 1095, 600, 13, 55, "Input",ExpressionUUID->"c724d4bf-d3af-4aca-a6ad-da1bc2d3cb36"],
-Cell[40525, 1110, 271, 4, 32, "Output",ExpressionUUID->"25776813-2da3-43e1-b2aa-13f73925e90d"]
+Cell[38714, 1057, 600, 13, 55, "Input",ExpressionUUID->"c724d4bf-d3af-4aca-a6ad-da1bc2d3cb36"],
+Cell[39317, 1072, 271, 4, 32, "Output",ExpressionUUID->"25776813-2da3-43e1-b2aa-13f73925e90d"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[40833, 1119, 439, 10, 54, "Input",ExpressionUUID->"054fabcf-86d8-4c69-b6ec-a6f649fede67"],
-Cell[41275, 1131, 250, 4, 32, "Output",ExpressionUUID->"0e61448a-2dd6-4dd7-8881-801fe17fecff"]
+Cell[39625, 1081, 439, 10, 54, "Input",ExpressionUUID->"054fabcf-86d8-4c69-b6ec-a6f649fede67"],
+Cell[40067, 1093, 250, 4, 32, "Output",ExpressionUUID->"0e61448a-2dd6-4dd7-8881-801fe17fecff"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[41562, 1140, 381, 12, 57, "Input",ExpressionUUID->"2ecc5dda-b1a1-44ea-9c08-50915e6b4bcd"],
-Cell[41946, 1154, 152, 3, 32, "Output",ExpressionUUID->"7eeaa193-ab75-4b0a-83df-981d27d4a942"]
+Cell[40354, 1102, 381, 12, 57, "Input",ExpressionUUID->"2ecc5dda-b1a1-44ea-9c08-50915e6b4bcd"],
+Cell[40738, 1116, 152, 3, 32, "Output",ExpressionUUID->"7eeaa193-ab75-4b0a-83df-981d27d4a942"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[42135, 1162, 269, 7, 52, "Input",ExpressionUUID->"866ac9fb-c25b-463f-8585-d2e440f94f62"],
-Cell[42407, 1171, 147, 3, 32, "Output",ExpressionUUID->"65018e6f-b5e2-4475-8149-dc95a9c0d5e3"]
+Cell[40927, 1124, 269, 7, 52, "Input",ExpressionUUID->"866ac9fb-c25b-463f-8585-d2e440f94f62"],
+Cell[41199, 1133, 147, 3, 32, "Output",ExpressionUUID->"65018e6f-b5e2-4475-8149-dc95a9c0d5e3"]
 }, Open  ]],
-Cell[42569, 1177, 287, 6, 34, "Text",ExpressionUUID->"2a1a464b-f407-464b-8472-7d0130bc680c"],
+Cell[41361, 1139, 287, 6, 34, "Text",ExpressionUUID->"2a1a464b-f407-464b-8472-7d0130bc680c"],
 Cell[CellGroupData[{
-Cell[42881, 1187, 288, 8, 53, "Input",ExpressionUUID->"c20eb1c0-8d34-4db4-a136-9b93e532b27f"],
-Cell[43172, 1197, 151, 3, 32, "Output",ExpressionUUID->"13791d40-2f35-4a0b-ad97-a78300e3be0d"]
+Cell[41673, 1149, 288, 8, 53, "Input",ExpressionUUID->"c20eb1c0-8d34-4db4-a136-9b93e532b27f"],
+Cell[41964, 1159, 151, 3, 32, "Output",ExpressionUUID->"13791d40-2f35-4a0b-ad97-a78300e3be0d"]
 }, Open  ]],
-Cell[43338, 1203, 273, 6, 34, "Text",ExpressionUUID->"c8768ecb-84df-4034-b87b-b375210edcbf"],
+Cell[42130, 1165, 273, 6, 34, "Text",ExpressionUUID->"c8768ecb-84df-4034-b87b-b375210edcbf"],
 Cell[CellGroupData[{
-Cell[43636, 1213, 503, 15, 69, "Input",ExpressionUUID->"dfb5ac9c-2df7-4519-85b9-73ddd4491f63"],
-Cell[44142, 1230, 168, 3, 32, "Output",ExpressionUUID->"df7446fa-3743-4e9d-b8b2-913c26d80276"]
+Cell[42428, 1175, 503, 15, 69, "Input",ExpressionUUID->"dfb5ac9c-2df7-4519-85b9-73ddd4491f63"],
+Cell[42934, 1192, 168, 3, 32, "Output",ExpressionUUID->"df7446fa-3743-4e9d-b8b2-913c26d80276"]
 }, Open  ]],
-Cell[44325, 1236, 881, 21, 64, "Text",ExpressionUUID->"4d1f54af-1b68-4da9-ae12-4bd1aba8a051"],
+Cell[43117, 1198, 881, 21, 64, "Text",ExpressionUUID->"4d1f54af-1b68-4da9-ae12-4bd1aba8a051"],
 Cell[CellGroupData[{
-Cell[45231, 1261, 834, 19, 141, "Input",ExpressionUUID->"e112d38b-ac77-4e6e-8385-4556f76f5dc4"],
-Cell[46068, 1282, 306, 5, 32, "Output",ExpressionUUID->"702f5ef5-cd2b-406c-93fc-d085871de812"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[46411, 1292, 254, 7, 55, "Input",ExpressionUUID->"8fc2e8e5-c990-4315-a219-bd1c0646b279"],
-Cell[46668, 1301, 152, 3, 32, "Output",ExpressionUUID->"d747c6ed-99a2-45ad-ba75-a7289f49da84"]
+Cell[44023, 1223, 834, 19, 141, "Input",ExpressionUUID->"e112d38b-ac77-4e6e-8385-4556f76f5dc4"],
+Cell[44860, 1244, 306, 5, 32, "Output",ExpressionUUID->"702f5ef5-cd2b-406c-93fc-d085871de812"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[46857, 1309, 739, 20, 134, "Input",ExpressionUUID->"3d3d82d8-d2a7-4bf1-ad85-06d573e54d0c"],
-Cell[47599, 1331, 176, 3, 32, "Output",ExpressionUUID->"d62f741c-f6a7-4c5a-af68-bda413ff2c5d"]
+Cell[45203, 1254, 254, 7, 55, "Input",ExpressionUUID->"8fc2e8e5-c990-4315-a219-bd1c0646b279"],
+Cell[45460, 1263, 152, 3, 32, "Output",ExpressionUUID->"d747c6ed-99a2-45ad-ba75-a7289f49da84"]
 }, Open  ]],
-Cell[47790, 1337, 367, 7, 34, "Text",ExpressionUUID->"9d1b6eca-24ec-4dbb-bdc0-c621edfefb8f"],
 Cell[CellGroupData[{
-Cell[48182, 1348, 181, 4, 28, "Input",ExpressionUUID->"76fd1f4c-1a09-4a66-bc66-6b460d45be54"],
-Cell[48366, 1354, 139, 3, 32, "Output",ExpressionUUID->"39aa7486-ef34-46ab-ac9d-18402cf7fdea"]
+Cell[45649, 1271, 739, 20, 134, "Input",ExpressionUUID->"3d3d82d8-d2a7-4bf1-ad85-06d573e54d0c"],
+Cell[46391, 1293, 176, 3, 32, "Output",ExpressionUUID->"d62f741c-f6a7-4c5a-af68-bda413ff2c5d"]
 }, Open  ]],
-Cell[48520, 1360, 684, 15, 41, "Text",ExpressionUUID->"b11bbd5f-033e-4d9f-bb71-35627f4ec06f"],
-Cell[49207, 1377, 268, 7, 53, "Input",ExpressionUUID->"90e413e0-9c61-47b4-a2b5-cf738fd94a8d"],
-Cell[49478, 1386, 217, 4, 34, "Text",ExpressionUUID->"1ca06282-f75b-4d92-b810-7cb847754751"],
-Cell[49698, 1392, 154, 3, 32, "Output",ExpressionUUID->"9beac73a-5537-4b02-b81f-1cfcb439988a"],
-Cell[49855, 1397, 827, 20, 106, "Text",ExpressionUUID->"07804415-d552-4236-a308-2a6e61202cdc"],
+Cell[46582, 1299, 367, 7, 34, "Text",ExpressionUUID->"9d1b6eca-24ec-4dbb-bdc0-c621edfefb8f"],
 Cell[CellGroupData[{
-Cell[50707, 1421, 471, 13, 78, "Input",ExpressionUUID->"d07bb088-d0f5-4547-9dee-931ab68567d5"],
-Cell[51181, 1436, 150, 3, 32, "Output",ExpressionUUID->"0b3eb328-d230-4f4c-a746-2141ddbf3335"]
+Cell[46974, 1310, 181, 4, 28, "Input",ExpressionUUID->"76fd1f4c-1a09-4a66-bc66-6b460d45be54"],
+Cell[47158, 1316, 139, 3, 32, "Output",ExpressionUUID->"39aa7486-ef34-46ab-ac9d-18402cf7fdea"]
 }, Open  ]],
-Cell[51346, 1442, 267, 6, 34, "Text",ExpressionUUID->"9b6df64f-a2b5-4fd2-b316-6b0fb9d9a8bc"],
+Cell[47312, 1322, 684, 15, 41, "Text",ExpressionUUID->"b11bbd5f-033e-4d9f-bb71-35627f4ec06f"],
+Cell[47999, 1339, 268, 7, 53, "Input",ExpressionUUID->"90e413e0-9c61-47b4-a2b5-cf738fd94a8d"],
+Cell[48270, 1348, 217, 4, 34, "Text",ExpressionUUID->"1ca06282-f75b-4d92-b810-7cb847754751"],
+Cell[48490, 1354, 154, 3, 32, "Output",ExpressionUUID->"9beac73a-5537-4b02-b81f-1cfcb439988a"],
+Cell[48647, 1359, 827, 20, 106, "Text",ExpressionUUID->"07804415-d552-4236-a308-2a6e61202cdc"],
 Cell[CellGroupData[{
-Cell[51638, 1452, 252, 6, 28, "Input",ExpressionUUID->"b448ac8e-7310-4b5d-b6d0-f5f299c5669a"],
-Cell[51893, 1460, 153, 3, 32, "Output",ExpressionUUID->"bb066ec0-92a9-4b0d-9855-c2056a00b96e"]
+Cell[49499, 1383, 471, 13, 78, "Input",ExpressionUUID->"d07bb088-d0f5-4547-9dee-931ab68567d5"],
+Cell[49973, 1398, 150, 3, 32, "Output",ExpressionUUID->"0b3eb328-d230-4f4c-a746-2141ddbf3335"]
 }, Open  ]],
-Cell[52061, 1466, 521, 11, 78, "Text",ExpressionUUID->"4820a60a-8cbc-486b-b715-dc29248138b4"],
+Cell[50138, 1404, 267, 6, 34, "Text",ExpressionUUID->"9b6df64f-a2b5-4fd2-b316-6b0fb9d9a8bc"],
 Cell[CellGroupData[{
-Cell[52607, 1481, 182, 4, 51, "Input",ExpressionUUID->"2ff4db7f-bd44-40ca-a50c-bf3623d2368a"],
-Cell[52792, 1487, 150, 3, 32, "Output",ExpressionUUID->"93417b3c-5c2d-457d-9e1b-8bb0afbed5be"]
+Cell[50430, 1414, 252, 6, 28, "Input",ExpressionUUID->"b448ac8e-7310-4b5d-b6d0-f5f299c5669a"],
+Cell[50685, 1422, 153, 3, 32, "Output",ExpressionUUID->"bb066ec0-92a9-4b0d-9855-c2056a00b96e"]
+}, Open  ]],
+Cell[50853, 1428, 521, 11, 78, "Text",ExpressionUUID->"4820a60a-8cbc-486b-b715-dc29248138b4"],
+Cell[CellGroupData[{
+Cell[51399, 1443, 182, 4, 51, "Input",ExpressionUUID->"2ff4db7f-bd44-40ca-a50c-bf3623d2368a"],
+Cell[51584, 1449, 150, 3, 32, "Output",ExpressionUUID->"93417b3c-5c2d-457d-9e1b-8bb0afbed5be"]
 }, Open  ]]
 }
 ]

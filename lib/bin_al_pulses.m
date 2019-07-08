@@ -1,8 +1,8 @@
-function al_pulses=bin_al_pulses(anal_opts,data)
+function al_pulses=bin_al_pulses(anal_opts,mcp_data)
 % warning al_pulses.pos_stat will be removed in a furture release
 
 
-iimax=size(data.mcp_tdc.counts_txy,2);
+iimax=size(mcp_data.counts_txy,2);
 al_pulses=[];
 al_pulses.pulsedt=anal_opts.pulsedt;
 al_pulses.window=nan(anal_opts.pulses,3,2); %initalize
@@ -10,17 +10,17 @@ al_pulses.num_counts=nan(iimax,anal_opts.pulses);
 al_pulses.pos.mean=nan(iimax,anal_opts.pulses,3);
 al_pulses.pos.std=nan(iimax,anal_opts.pulses,3);
 
-fprintf('binning pulses in files %04u:%04u',size(data.mcp_tdc.counts_txy,2),0)
+fprintf('binning pulses in files %04u:%04u',size(mcp_data.counts_txy,2),0)
 first_good_shot=true;
 for shot=1:iimax
-        if data.mcp_tdc.all_ok(shot)
+        if mcp_data.all_ok(shot)
             for pulse=1:anal_opts.pulses
                 %set up time window centered arround t0
                 t_pulse_cen=anal_opts.t0+anal_opts.pulsedt...
                     *(anal_opts.start_pulse+pulse-2);
                 trange=t_pulse_cen+anal_opts.pulse_twindow*[-0.5,0.5];
                 pulse_win_txy=[trange;anal_opts.xylim]; 
-                counts_pulse=masktxy_square(data.mcp_tdc.counts_txy{shot},pulse_win_txy);
+                counts_pulse=masktxy_square(mcp_data.counts_txy{shot},pulse_win_txy);
                 if anal_opts.plot.all
                     stfig;
                     set(gcf,'Color',[1 1 1]);
@@ -66,7 +66,7 @@ for shot=1:iimax
             est_t0=anal_opts.t0+mean_cen_time;
             warning('pulses are not centered in time pehaps t0 should be %.5f',est_t0)
         end
-        end%is data.mcp_tdc.all_ok
+        end%is mcp_data.all_ok
         if mod(shot,10)==0,fprintf('\b\b\b\b%04u',shot),end     
 %to set the pulse t0 right it can be handy to uncomment the next line
 %
@@ -90,7 +90,7 @@ end
 
 %% Could check that the pulse time is reasonable usign the fft of the count rate
 % 
-% tmp_dat=data.mcp_tdc.counts_txy{1};
+% tmp_dat=mcp_data.counts_txy{1};
 % 
 % opt_in.xdat=tmp_dat(:,1);
 % opt_in.max=2.0;
