@@ -24,7 +24,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190707_forbidden427_heating_method\';
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190708_forbidden427_heating_method\';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -194,6 +194,8 @@ end
 
 %%
 %% warning if you do this with all the counts will likely run out of mem
+anal_opts.plot2d.do=false;
+if anal_opts.plot2d.do
 anal_opts.signal=[];
 anal_opts.plot2d.lim.x=[-45,45]*1e-3;
 anal_opts.plot2d.lim.y=[-45,45]*1e-3;
@@ -237,19 +239,10 @@ xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
 else
 xlabel(h,'Count Density (m^{-2})')
 end
+end
     
-%%
 
-
-
-
-
-%%
-
-
-
-
-%% BINNING UP THE ATOM LASER PULSES
+%% fitting the atom laser pulses
 %now find the mean position of each pulse of the atom laser in each shot
 
 anal_opts.atom_laser=[];
@@ -257,7 +250,7 @@ anal_opts.atom_laser.pulsedt=120e-3;
 anal_opts.atom_laser.t0=1.637327; %center i ntime of the first pulse
 anal_opts.atom_laser.start_pulse=1; %atom laser pulse to start with
 anal_opts.atom_laser.pulses=189;
-anal_opts.atom_laser.pulse_twindow=atom_laser.pulsedt*0.9;
+anal_opts.atom_laser.pulse_twindow=anal_opts.atom_laser.pulsedt*0.9;
 tmp_xlim=[-45,45];    
 tmp_ylim=[-45, 45];
 anal_opts.atom_laser.xylim=[tmp_xlim;tmp_ylim];
@@ -268,20 +261,22 @@ anal_opts.atom_laser.global=anal_opts.global;
 
 
 al_mcp_data=data.mcp_tdc.masked;
-al_mcp_data.counts_txy=al_mcp_data.counts_txy(1:20); % good for debuging
+%al_mcp_data.counts_txy=al_mcp_data.counts_txy(1:20); % good for debuging
 al_mcp_data.all_ok=al_mcp_data.num_counts>1e3;
+
 tic
 data.al_pulses=fit_gauss_to_al_pulses(anal_opts.atom_laser,al_mcp_data);
 toc
 
-%%
-save('20190708T2144_1000_therm_fits_done.mat','-v7.3')
+
+save('20190708_al_fits_done.mat','-v7.3')
 
 
 
 
 %%
 anal_opts.heating_fit=[];
+data.mcp_tdc.all_ok=al_mcp_data.all_ok;
 
 data.signal.heating = forbidden_signal_heating(data,anal_opts.heating_fit);
 %% Generate signal

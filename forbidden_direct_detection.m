@@ -24,7 +24,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190704_forbidden_long interrogation\';
+anal_opts.tdc_import.dir='Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190704_forbidden_long interrogation\';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -147,6 +147,7 @@ clear('sub_data')
 %% data.sync = match_timestamps(data,import_opts);
 %% bryce change, this is now in the wavemeter proceesing code
 
+save('20190704_data_imported.mat','-v7.3')
 
 %%
 import_opts.signal=[];

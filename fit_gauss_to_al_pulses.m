@@ -26,8 +26,8 @@ coeff_names={'amp','mu','sig','offset'};
 fprintf('fitting A.L. pulses in files %04u:%04u',size(mcp_data.counts_txy,2),0)
 first_good_shot=true;
 for shot=1:iimax
-        if mcp_data.all_ok(shot)
-            shot_txy_counts=mcp_data.counts_txy{shot};
+        shot_txy_counts=mcp_data.counts_txy{shot};
+        if mcp_data.all_ok(shot) & numel(shot_txy_counts)>1e3;
             for pulse=1:anal_opts.pulses
                 %set up time window centered arround t0
                 t_pulse_cen=anal_opts.t0+anal_opts.pulsedt...
@@ -41,62 +41,64 @@ for shot=1:iimax
                 
                 xdata=shist_out.bin.centers-t_pulse_cen;
                 ydata=shist_out.count_rate.smooth;
-                amp_guess=max(ydata);
-                mu_guess=wmean(xdata,ydata); %compute the weighted mean
-                sig_guess=sqrt(sum((xdata-mu_guess).^2.*ydata)/sum(ydata)); %compute the mean square weighted deviation
-                fo = statset('TolFun',10^-6,...
-                    'TolX',1e-4,...
-                    'MaxIter',1e4,...
-                    'UseParallel',1);
-                % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
-                inital_guess=[amp_guess,mu_guess,sig_guess,0];
-                fitobject=fitnlm(xdata,ydata,...
-                    gauss_fun1d,...
-                     inital_guess,...
-                    'CoefficientNames',coeff_names,'Options',fo);
-                fit_coeff=fitobject.Coefficients.Estimate;
-                fit_se=fitobject.Coefficients.SE;
-                al_pulses.fit.Estimate(shot,pulse,:)=fit_coeff;
-                al_pulses.fit.SE(shot,pulse,:)=fit_se;
-                al_pulses.fit.RMSE(shot,pulse)=fitobject.RMSE;
-                al_pulses.fit.x_offset=t_pulse_cen;
-                
-                temperature_val=(abs(fit_coeff(3))*anal_opts.global.fall_velocity/anal_opts.global.fall_time)^2 *const.mhe/const.kb;
-                temperature_unc=temperature_val*2*fit_se(3)/abs(fit_coeff(3));
-                
-                al_pulses.fit.temperature.val(shot,pulse)=temperature_val;
-                al_pulses.fit.temperature.unc(shot,pulse)=temperature_unc;
-                
-                if anal_opts.plot.all
-                    yscaling=1e-3;
-                    stfig(fig_single_pulse);
-                    clf
-                    plot(shist_out.bin.centers,shist_out.count_rate.smooth*yscaling,'k')
-                    xlabel('t, time(s)');
-                    ylabel('Count Rate(kHz/File)');
-                    x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
-                    [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit);
-                    x_sample_fit=x_sample_fit+t_pulse_cen;
-                    hold on
-                    plot(x_sample_fit,ysamp_ci*yscaling,'color',[1,1,1].*0.5)
-                    plot(x_sample_fit,ysamp_val*yscaling,'r')
-                    plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit-t_pulse_cen)*yscaling)
-                    
-                    
-                    cen_units='ms';
-                    cen_str=string_value_with_unc(fit_coeff(2)*1e3,fit_se(2)*1e3,'b');
-                    width_units='ms';
-                    width_str=string_value_with_unc(fit_coeff(3)*1e3,fit_se(3)*1e3,'b');
-                    offset_units='kHz';
-                    offset_str=string_value_with_unc(fit_coeff(4)*1e-3,fit_se(4)*1e-3,'b');
-                    
-                    temperature_str=string_value_with_unc(1e6*temperature_val,1e6*temperature_unc,'b');
-                    str=sprintf('Gauss fit \n   Cen %s %s \n   Width %s %s \n   offset %s %s\n   Temp.(no interactions)%s uk',...
-                        cen_str,cen_units,width_str,width_units,offset_str,offset_units,temperature_str);
-                    text(0.01,0.9,str,'Units','normalized'); 
-                    hold off
-                    drawnow
-    
+                if sum(ydata>0)>5
+                    amp_guess=max(ydata);
+                    mu_guess=wmean(xdata,ydata); %compute the weighted mean
+                    sig_guess=sqrt(sum((xdata-mu_guess).^2.*ydata)/sum(ydata)); %compute the mean square weighted deviation
+                    fo = statset('TolFun',10^-6,...
+                        'TolX',1e-4,...
+                        'MaxIter',1e4,...
+                        'UseParallel',1);
+                    % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
+                    inital_guess=[amp_guess,mu_guess,sig_guess,0];
+                    fitobject=fitnlm(xdata,ydata,...
+                        gauss_fun1d,...
+                         inital_guess,...
+                        'CoefficientNames',coeff_names,'Options',fo);
+                    fit_coeff=fitobject.Coefficients.Estimate;
+                    fit_se=fitobject.Coefficients.SE;
+                    al_pulses.fit.Estimate(shot,pulse,:)=fit_coeff;
+                    al_pulses.fit.SE(shot,pulse,:)=fit_se;
+                    al_pulses.fit.RMSE(shot,pulse)=fitobject.RMSE;
+                    al_pulses.fit.x_offset=t_pulse_cen;
+
+                    temperature_val=(abs(fit_coeff(3))*anal_opts.global.fall_velocity/anal_opts.global.fall_time)^2 *const.mhe/const.kb;
+                    temperature_unc=temperature_val*2*fit_se(3)/abs(fit_coeff(3));
+
+                    al_pulses.fit.temperature.val(shot,pulse)=temperature_val;
+                    al_pulses.fit.temperature.unc(shot,pulse)=temperature_unc;
+
+                    if anal_opts.plot.all
+                        yscaling=1e-3;
+                        stfig(fig_single_pulse);
+                        clf
+                        plot(shist_out.bin.centers,shist_out.count_rate.smooth*yscaling,'k')
+                        xlabel('t, time(s)');
+                        ylabel('Count Rate(kHz/File)');
+                        x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
+                        [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit);
+                        x_sample_fit=x_sample_fit+t_pulse_cen;
+                        hold on
+                        plot(x_sample_fit,ysamp_ci*yscaling,'color',[1,1,1].*0.5)
+                        plot(x_sample_fit,ysamp_val*yscaling,'r')
+                        plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit-t_pulse_cen)*yscaling)
+
+
+                        cen_units='ms';
+                        cen_str=string_value_with_unc(fit_coeff(2)*1e3,fit_se(2)*1e3,'b');
+                        width_units='ms';
+                        width_str=string_value_with_unc(fit_coeff(3)*1e3,fit_se(3)*1e3,'b');
+                        offset_units='kHz';
+                        offset_str=string_value_with_unc(fit_coeff(4)*1e-3,fit_se(4)*1e-3,'b');
+
+                        temperature_str=string_value_with_unc(1e6*temperature_val,1e6*temperature_unc,'b');
+                        str=sprintf('Gauss fit \n   Cen %s %s \n   Width %s %s \n   offset %s %s\n   Temp.(no interactions)%s uk',...
+                            cen_str,cen_units,width_str,width_units,offset_str,offset_units,temperature_str);
+                        text(0.01,0.9,str,'Units','normalized'); 
+                        hold off
+                        drawnow
+
+                    end
                 end
                 if first_good_shot
                     %only need to store this on first shot becasue the same for
