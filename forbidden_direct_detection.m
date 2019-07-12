@@ -24,7 +24,8 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det\';
+%anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det\';
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190711_rf_knife_height_dep_1.85MHz'
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -147,7 +148,7 @@ clear('sub_data')
 %% data.sync = match_timestamps(data,import_opts);
 %% bryce change, this is now in the wavemeter proceesing code
 fprintf('saving status...')
-save('20190704_data_imported.mat','-v7.3')
+%save('20190704_data_imported.mat','-v7.3')
 fprintf('done')
 
 %%
@@ -317,7 +318,8 @@ suggested_bins=numel(grouped_values)+2;
 suggested_bin_width=mean(diff(grouped_values));
 bin_width=2;
 
-probe_freq_bins=col_vec(linspace(-40-bin_width/2,40+bin_width/2,41));
+%probe_freq_bins=col_vec(linspace(-40-bin_width/2,40+bin_width/2,41));
+probe_freq_bins=[-10,10,100]
 %probe_freq_bins=col_vec(linspace(-25,20,9));
 iimax=numel(probe_freq_bins)-1;
 for ii=1:iimax

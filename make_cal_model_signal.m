@@ -9,7 +9,7 @@ temp_cal=col_vec(data.mcp_tdc.probe.calibration);
 temp_cal(isnan(temp_cal))=0;
 cal_dat_mask=col_vec(data.mcp_tdc.ok.all) & temp_cal;
 
-if sum(cal_dat_mask)<10
+if sum(cal_dat_mask)<3
     error('not enough calibration data pts')
 end
 
