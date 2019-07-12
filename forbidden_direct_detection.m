@@ -24,13 +24,13 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190704_forbidden_long interrogation\';
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det\';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
 tlim=[0,inf];
 anal_opts.tdc_import.txylim=[tlim;tmp_xlim;tmp_ylim];
-anal_opts.dld_aquire=10;
+anal_opts.dld_aquire=22;
 anal_opts.trig_dld=20.3;
 anal_opts.probe.t0=20;
 anal_opts.probe.duration=6;
@@ -146,65 +146,354 @@ clear('sub_data')
 %% Match the timestamps    
 %% data.sync = match_timestamps(data,import_opts);
 %% bryce change, this is now in the wavemeter proceesing code
-
+fprintf('saving status...')
 save('20190704_data_imported.mat','-v7.3')
+fprintf('done')
 
 %%
-import_opts.signal=[];
-import_opts.signal.plot.lim.x=[-45,45]*1e-3;
-import_opts.signal.plot.lim.y=[-45,45]*1e-3;
-import_opts.signal.plot.nbins=1e3;
-import_opts.signal.plot.blur=3;
-import_opts.signal.plot.cmp_dyn_range=true;
+
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
 %tlim=[0.5,6.2];
-tlim=[5,22.5];
-import_opts.signal.square_mask=[tlim;tmp_xlim;tmp_ylim];
-import_opts.signal.circ_mask=[[0,0,35e-3,1];
-                              [35e-3,5e-3,7e-3,0];
-                              [25.05e-3,-19e-3,8e-3,0];
-                              [26.94e-3,21.98e-3,5e-3,0];
-                              [19.1e-3,-28.0e-3,4e-3,0];
-                              [2.973e-3,-33.15e-3,4e-3,0];
-                              [6.216e-3,34.41e-3,3e-3,0];
-                              [13.78e-3,31.62e-3,3e-3,0];
-                              [21.26e-3,25.95e-3,3e-3,0];
-                              [30.36e-3,-12.52e-3,5e-3,0];
+tlim=[1.5,22.5];
+anal_opts.hotspot_mask.square_mask=[tlim;tmp_xlim;tmp_ylim];
+anal_opts.hotspot_mask.circ_mask=[[0,0,35e-3,1];
+                            [35e-3,5e-3,7e-3,0];
+                            [25.05e-3,-19e-3,8e-3,0];
+                            [26.94e-3,21.98e-3,5e-3,0];
+                            [19.1e-3,-28.0e-3,4e-3,0];
+                            [2.973e-3,-33.15e-3,4e-3,0];
+                            [6.216e-3,34.41e-3,3e-3,0];
+                            [13.78e-3,31.62e-3,3e-3,0];
+                            [21.26e-3,25.95e-3,3e-3,0];
+                            [30.36e-3,-12.52e-3,5e-3,0];
                               ];
+do_mask=true;
 
-data.signal.masked_number = forbidden_signal_masked_num(data,import_opts.signal);
+if do_mask
+    num_shots=numel(data.mcp_tdc.counts_txy);
+    empty_shots=cellfun(@isempty,data.mcp_tdc.counts_txy);
+    data.mcp_tdc.masked.counts_txy={};
+    data.mcp_tdc.masked.num_counts=data.mcp_tdc.num_counts*nan;
+    fprintf('masking shots %04u:%04u',num_shots,0)
+    for ii=1:num_shots
+        txy_shot=data.mcp_tdc.counts_txy{ii};
+        if ~isempty(txy_shot)
+        txy_shot=masktxy_square(txy_shot,anal_opts.hotspot_mask.square_mask);
+        txy_shot=masktxy_2d_circle(txy_shot,anal_opts.hotspot_mask.circ_mask);
+        data.mcp_tdc.masked.num_counts(ii)=numel(txy_shot);
+        data.mcp_tdc.masked.counts_txy{ii}=txy_shot;
+        else
+            warning('empty shot')
+        end
+        if mod(ii,10)==0,fprintf('\b\b\b\b%04u',ii),end 
+    end
+    fprintf('...Done\n') 
+else
+    data.mcp_tdc.masked.counts_txy=data.mcp_tdc.counts_txy;
+    data.mcp_tdc.masked.num_counts=data.mcp_tdc.num_counts;
+end
+
+
+
+%%
+%% warning if you do this with all the counts will likely run out of memory
+anal_opts.plot2d.do=false;
+if anal_opts.plot2d.do
+anal_opts.signal=[];
+anal_opts.plot2d.lim.x=[-45,45]*1e-3;
+anal_opts.plot2d.lim.y=[-45,45]*1e-3;
+anal_opts.plot2d.nbins=1e3;
+anal_opts.plot2d.blur=3;
+anal_opts.plot2d.cmp_dyn_range=true;
+
+
+not_empty_shots=~cellfun(@isempty,data.mcp_tdc.masked.counts_txy);
+all_txy=cat(1,data.mcp_tdc.masked.counts_txy{not_empty_shots});
+dyn_range_pow=0.2;
+num_bins=anal_opts.plot2d.nbins;
+edge_x=linspace(min(anal_opts.plot2d.lim.x),max(anal_opts.plot2d.lim.x),num_bins);
+edge_y=linspace(min(anal_opts.plot2d.lim.y),max(anal_opts.plot2d.lim.y),num_bins);
+
+spatial_blur=anal_opts.plot2d.blur;
+bin_area=(range(anal_opts.plot.lim.x)/num_bins)*(range(anal_opts.plot.lim.x)/num_bins);
+[counts,centers]=hist3(all_txy(:,2:3),'edges',{edge_x,edge_y});
+counts=counts/bin_area;
+counts=counts/num_shots;
+
+%imagesc seems to plot the wrong way round so we transpose here
+
+if anal_opts.plot2d.cmp_dyn_range
+    counts=counts.^dyn_range_pow;
+end
+if  ~spatial_blur==0
+    counts=imgaussfilt(counts,spatial_blur);
+end
+stfig('counts during probe')
+imagesc(10^3*centers{1},10^3*centers{2},transpose(counts))
+colormap(viridis())
+set(gca,'Ydir','normal')
+set(gcf,'Color',[1 1 1]);
+title('Spatial Dist. TOP')
+xlabel('X(mm)')
+ylabel('Y(mm)')
+h=colorbar;
+if anal_opts.plot.cmp_dyn_range
+xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
+else
+xlabel(h,'Count Density (m^{-2})')
+end
+end
+
+%%
+
+data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>50e3;
+data.signal.raw=[];
+data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts);
+data.signal.raw.unc=sqrt(data.signal.raw.val);
+
+anal_opts.cal_model=[];
+anal_opts.cal_model.smooth_time=60*5;
+anal_opts.cal_model.plot=true;
+
+out_calibration=make_cal_model_signal(anal_opts.cal_model,data);
+data.signal.cal=out_calibration;
+
+
+%%
+
+predicted_freq=700939267; %MHz
+
+
+%set up the colors to use
+colors_main=[[233,87,0];[33,188,44];[0,165,166]];
+%colors_main = [[75,151,201];[193,114,66];[87,157,95]];
+font_name='cmr10';
+font_size_global=14;
+
+colors_main=colors_main./255;
+lch=colorspace('RGB->LCH',colors_main(:,:));
+lch(:,1)=lch(:,1)+20;
+colors_detail=colorspace('LCH->RGB',lch);
+%would prefer to use srgb_2_Jab here
+color_shaded=colorspace('RGB->LCH',colors_main(3,:));
+color_shaded(1)=125;
+color_shaded=colorspace('LCH->RGB',color_shaded);
 
 
 
 
+is_cal=data.mcp_tdc.probe.calibration;
+is_cal(isnan(is_cal))=1;
 
-%% Generate signal
-data.signal.total_num = signal_process(data,import_opts);
+is_shot_good=data.wm_log.proc.probe.freq.act.std<5 &...
+    (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<10 &...
+    ~is_cal;
+
+
+probe_freq=data.wm_log.proc.probe.freq.act.mean*2;%freq in blue
+probe_freq=probe_freq-predicted_freq;
+
+signal_unbinned.val=cat(2,data.signal.cal.calibrated_signal.val(is_shot_good));
+signal_unbinned.freq=probe_freq(is_shot_good);
+
+sigma_from_mean=(signal_unbinned.val-nanmean(signal_unbinned.val,1))/nanstd(signal_unbinned.val,1);
+is_not_oulier=sigma_from_mean<7;
+signal_unbinned.val=signal_unbinned.val(is_not_oulier);
+signal_unbinned.freq=signal_unbinned.freq(is_not_oulier);
+
+signal_unbinned.names={'RF knife method'};
+ signal_unbinned.ystr={'\Delta counts'};
+signal_unbinned.ymult=[1];
+
+
+fprintf('unbinned mean of counts               %f \n',nanmean(signal_unbinned.val(:,1)))
+fprintf('unbinned standard deviation of counts %f \n',nanstd(signal_unbinned.val(:,1)))
+
+
+signal_bined=[];
+grouped_values=uniquetol(signal_unbinned.freq,0.01);
+suggested_bins=numel(grouped_values)+2;
+suggested_bin_width=mean(diff(grouped_values));
+bin_width=2;
+
+probe_freq_bins=col_vec(linspace(-40-bin_width/2,40+bin_width/2,41));
+%probe_freq_bins=col_vec(linspace(-25,20,9));
+iimax=numel(probe_freq_bins)-1;
+for ii=1:iimax
+    signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
+    bin_mask=signal_unbinned.freq<probe_freq_bins(ii+1) & signal_unbinned.freq>probe_freq_bins(ii);
+    if sum(bin_mask)==0
+        warning('no elements')
+    else
+    signal_bined.val(ii,:)=nanmean(signal_unbinned.val(bin_mask,:),1);
+    %sum(bin_mask)
+    %std(signal_unbinned.val(bin_mask))
+    signal_bined.unc_val(ii,:)=nanstd(signal_unbinned.val(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+    signal_bined.num_bin(ii)=sum(bin_mask);
+    signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
+    signal_bined.freq_mean(ii)=nanmean(signal_unbinned.freq(bin_mask));
+    signal_bined.freq_std(ii)=nanstd(signal_unbinned.freq(bin_mask));
+    signal_bined.freq_obs_min_max(ii,:)=[min(signal_unbinned.freq(bin_mask)),max(signal_unbinned.freq(bin_mask))];
+    signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+    signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+    signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
+     end
+end
+
+stfig('counts vs probe freq');
+clf
+
+gauss_fun1d = @(b,x) b(1).*exp(-((x-b(2)).^2)./(2*b(3).^2))+b(4); 
+coeff_names={'amp','mu','sig','offset'};
+
+tot_plots=size(signal_unbinned.val,2);
+signal_idx=1;
+for signal_idx=1:tot_plots
+   
+    ymultipler=signal_unbinned.ymult(signal_idx);
+    ylabel_str=signal_unbinned.ystr(signal_idx);
+    
+    subplot(2,tot_plots,0+signal_idx)
+    plot(signal_unbinned.freq,signal_unbinned.val(:,signal_idx)*ymultipler,'x')
+    hold on
+    plot(probe_freq_bins,probe_freq_bins*0,'s')
+    hold off
+    xlabel('freq-theory (MHz)')
+    %ylabel('heating rate (nk/s)')
+    ylabel(ylabel_str)
+    title(signal_unbinned.names{signal_idx})
+    xlim([min(probe_freq_bins),max(probe_freq_bins)])
+    xl=xlim;
+    
+    xdata=col_vec(signal_bined.freq_mean);
+    ydata=signal_bined.val(:,signal_idx);
+    yunc=signal_bined.unc_val(:,signal_idx);
+    
+    subplot(2,tot_plots,tot_plots+signal_idx)
+    %plot(col_vec(signal_bined.freq_bin_cen),ydata*ymultipler,'x')
+    plot(xdata,ydata*ymultipler,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
+    errorbar(xdata,ydata*ymultipler,...
+        signal_bined.unc_val(:,signal_idx)*ymultipler,signal_bined.unc_val(:,signal_idx)*ymultipler,...
+         signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
+        'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+         'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+    
+    %errorbarxy(xdata,ydata*ymultipler,...
+    %    signal_bined.freq_obs_min_max_mean_diff,signal_bined.unc_val(:,signal_idx)*ymultipler);
+    xlim(xl)
+    xlabel('freq-theory (MHz)')
+    ylabel(ylabel_str)
+    title(signal_unbinned.names{signal_idx})
+    
+    % fit a gaussian
+   
+    is_data_not_nan=~isnan(xdata) & ~isnan(ydata) & ~isnan(yunc);
+    xdata=xdata(is_data_not_nan);
+    ydata=ydata(is_data_not_nan);
+    yunc=yunc(is_data_not_nan);
+    
+    amp_guess=max(ydata);
+    ydata_shifted =ydata-min(ydata);
+    mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
+    %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
+    sig_guess=5;
+    fo = statset('TolFun',10^-6,...
+        'TolX',1e-4,...
+        'MaxIter',1e4,...
+        'UseParallel',1);
+    % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
+    inital_guess=[amp_guess,mu_guess,sig_guess,0];
+    fitobject=fitnlm(xdata,ydata,...
+        gauss_fun1d,...
+         inital_guess,...
+        'CoefficientNames',coeff_names,'Options',fo);
+    fit_coeff=fitobject.Coefficients.Estimate;
+    fit_se=fitobject.Coefficients.SE;
+    x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
+    [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+    hold on
+    plot(x_sample_fit,ysamp_ci*ymultipler,'color',[1,1,1].*0.5)
+    plot(x_sample_fit,ysamp_val*ymultipler,'r')
+    % show the inital guess
+    %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
+    fitobject
+    
+    amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1),fitobject.Coefficients.SE(1),'b');
+    cen_str=string_value_with_unc(fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2),'b');
+    width_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
+    offset_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
+    width_units='MHz';
+    offset_units='counts';
+    amp_units='counts';
+    str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   Offset %s %s',...
+        cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
+    text(0.01,0.9,str,'Units','normalized'); 
+    
+    fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
+                    
+    
+end
 
 
 
-% Create a calibration model
-data.cal = make_calibration_model(data,import_opts);
 
-%% Mask out shots which failed
-% data.check = check_for_errors(data,opts);
-
-% %% Break data into categories
-% data.cat = categorize_shots(data,opts);
- 
-% %% Peak detection
-%data = auto_peak_detect(data,opts);
-
-% %% Fit the detected peaks
-%data = fit_detected_peaks(data,opts);
-% data = fancy_fits(data,opts);
+%%
+% import_opts.signal=[];
+% import_opts.signal.plot.lim.x=[-45,45]*1e-3;
+% import_opts.signal.plot.lim.y=[-45,45]*1e-3;
+% import_opts.signal.plot.nbins=1e3;
+% import_opts.signal.plot.blur=3;
+% import_opts.signal.plot.cmp_dyn_range=true;
+% tmp_xlim=[-50e-3, 50e-3];    
+% tmp_ylim=[-50e-3, 50e-3];
+% %tlim=[0.5,6.2];
+% tlim=[5,22.5];
+% import_opts.signal.square_mask=[tlim;tmp_xlim;tmp_ylim];
+% import_opts.signal.circ_mask=[[0,0,35e-3,1];
+%                               [35e-3,5e-3,7e-3,0];
+%                               [25.05e-3,-19e-3,8e-3,0];
+%                               [26.94e-3,21.98e-3,5e-3,0];
+%                               [19.1e-3,-28.0e-3,4e-3,0];
+%                               [2.973e-3,-33.15e-3,4e-3,0];
+%                               [6.216e-3,34.41e-3,3e-3,0];
+%                               [13.78e-3,31.62e-3,3e-3,0];
+%                               [21.26e-3,25.95e-3,3e-3,0];
+%                               [30.36e-3,-12.52e-3,5e-3,0];
+%                               ];
 % 
-% %% Zeeman shift correction
-%data = zeeman_correction(data,opts);
-
-%% Presentation plots
-%data = present_plots(data,opts);
+% data.signal.masked_number = forbidden_signal_masked_num(data,import_opts.signal);
+% 
+% 
+% 
+% 
+% 
+% %% Generate signal
+% data.signal.total_num = signal_process(data,import_opts);
+% 
+% 
+% 
+% % Create a calibration model
+% data.cal = make_calibration_model(data,import_opts);
+% 
+% %% Mask out shots which failed
+% % data.check = check_for_errors(data,opts);
+% 
+% % %% Break data into categories
+% % data.cat = categorize_shots(data,opts);
+%  
+% % %% Peak detection
+% %data = auto_peak_detect(data,opts);
+% 
+% % %% Fit the detected peaks
+% %data = fit_detected_peaks(data,opts);
+% % data = fancy_fits(data,opts);
+% % 
+% % %% Zeeman shift correction
+% %data = zeeman_correction(data,opts);
+% 
+% %% Presentation plots
+% %data = present_plots(data,opts);
 
 %     
 % 

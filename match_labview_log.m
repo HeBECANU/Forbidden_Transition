@@ -5,7 +5,7 @@ function data=match_labview_log(data,anal_opts)
 %try and match up the file with if it is a calibaration using the time
 %it is slightly overkill here to search each one, but just being extra
 %cautious/flexible
-time_thresh=3; %4how close for the times to be considered the same shot
+time_thresh=10; %4how close for the times to be considered the same shot
 %lets examine what the time difference does
 
 data.mcp_tdc.labview_shot_num=[];
