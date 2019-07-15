@@ -28,7 +28,8 @@ signal_cal=col_vec(data.signal.raw.val(cal_dat_mask));
 
 %interpolate the input data to subsample by a factor of 100
 time_samp_interp=col_vec(linspace(min(time_cal),max(time_cal),size(time_cal,1)*30));
-signal_interp_raw=col_vec(interp1(time_cal,signal_cal,time_samp_interp,'pchip'));
+%signal_interp_raw=col_vec(interp1(time_cal,signal_cal,time_samp_interp,'pchip'));
+signal_interp_raw=col_vec(interp1(time_cal,signal_cal,time_samp_interp,'linear'));
 
 %% do some filtering of the data
 %smooth the interpolated data

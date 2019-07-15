@@ -1,5 +1,11 @@
 %% Data analysis for Helium forbidden transition spectroscopy
-
+%% To do
+% - Total atom number calibration
+% - reintroduce ai import
+%   - add total integrated power calibration
+%   - add ai checks (mainly when laser is multi mode)
+% - general organisation and commenting
+%%
 % clear all;
 % Remove old data dirs from path
 
@@ -25,7 +31,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
 %anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det\';
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190711_rf_knife_height_dep_1.85MHz'
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\'
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -149,15 +155,18 @@ clear('sub_data')
 %% bryce change, this is now in the wavemeter proceesing code
 fprintf('saving status...')
 %save('20190704_data_imported.mat','-v7.3')
-fprintf('done')
+fprintf('done\n')
 
-%%
+%% masking out hot spots
 
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
 %tlim=[0.5,6.2];
 tlim=[1.5,22.5];
+tlim_tot=[22.6,25];%0 to 25 or 22.6 to 25?
+
 anal_opts.hotspot_mask.square_mask=[tlim;tmp_xlim;tmp_ylim];
+anal_opts.hotspot_mask.square_mask_tot=[tlim_tot;tmp_xlim;tmp_ylim];
 anal_opts.hotspot_mask.circ_mask=[[0,0,35e-3,1];
                             [35e-3,5e-3,7e-3,0];
                             [25.05e-3,-19e-3,8e-3,0];
@@ -176,14 +185,23 @@ if do_mask
     empty_shots=cellfun(@isempty,data.mcp_tdc.counts_txy);
     data.mcp_tdc.masked.counts_txy={};
     data.mcp_tdc.masked.num_counts=data.mcp_tdc.num_counts*nan;
+    
+    data.mcp_tdc.masked.tot_counts_txy={};
+    data.mcp_tdc.masked.tot_num_counts=data.mcp_tdc.num_counts*nan;
+    
     fprintf('masking shots %04u:%04u',num_shots,0)
     for ii=1:num_shots
         txy_shot=data.mcp_tdc.counts_txy{ii};
         if ~isempty(txy_shot)
-        txy_shot=masktxy_square(txy_shot,anal_opts.hotspot_mask.square_mask);
-        txy_shot=masktxy_2d_circle(txy_shot,anal_opts.hotspot_mask.circ_mask);
-        data.mcp_tdc.masked.num_counts(ii)=numel(txy_shot);
-        data.mcp_tdc.masked.counts_txy{ii}=txy_shot;
+            txy_shot_sig=masktxy_square(txy_shot,anal_opts.hotspot_mask.square_mask);
+            txy_shot_sig=masktxy_2d_circle(txy_shot_sig,anal_opts.hotspot_mask.circ_mask);
+            data.mcp_tdc.masked.num_counts(ii)=numel(txy_shot_sig);
+            data.mcp_tdc.masked.counts_txy{ii}=txy_shot_sig;
+            
+            txy_shot_tot=masktxy_square(txy_shot,anal_opts.hotspot_mask.square_mask_tot);
+            txy_shot_tot=masktxy_2d_circle(txy_shot_tot,anal_opts.hotspot_mask.circ_mask);
+            data.mcp_tdc.masked.tot_num_counts(ii)=numel(txy_shot_tot);
+            data.mcp_tdc.masked.tot_counts_txy{ii}=txy_shot_tot;
         else
             warning('empty shot')
         end
@@ -194,8 +212,7 @@ else
     data.mcp_tdc.masked.counts_txy=data.mcp_tdc.counts_txy;
     data.mcp_tdc.masked.num_counts=data.mcp_tdc.num_counts;
 end
-
-
+ 
 
 %%
 %% warning if you do this with all the counts will likely run out of memory
@@ -246,22 +263,24 @@ xlabel(h,'Count Density (m^{-2})')
 end
 end
 
-%%
+%% creation of the signal
 
 data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>50e3;
 data.signal.raw=[];
-data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts);
+data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts);% %./data.mcp_tdc.num_counts
+%data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts./data.mcp_tdc.masked.tot_num_counts);% %./data.mcp_tdc.num_counts
+%-1/6.3508.*(data.mcp_tdc.masked.tot_num_counts-1.190409565626061e+05)
 data.signal.raw.unc=sqrt(data.signal.raw.val);
 
 anal_opts.cal_model=[];
-anal_opts.cal_model.smooth_time=60*5;
+anal_opts.cal_model.smooth_time=60*1;
 anal_opts.cal_model.plot=true;
 
 out_calibration=make_cal_model_signal(anal_opts.cal_model,data);
 data.signal.cal=out_calibration;
 
 
-%%
+%% bin data points and fit
 
 predicted_freq=700939267; %MHz
 
@@ -313,37 +332,57 @@ fprintf('unbinned standard deviation of counts %f \n',nanstd(signal_unbinned.val
 
 
 signal_bined=[];
-grouped_values=uniquetol(signal_unbinned.freq,0.01);
-suggested_bins=numel(grouped_values)+2;
+[grouped_values,group_pop,group_idx]=uniquetol(signal_unbinned.freq,0.01);
+min_group_pop=2;
+group_mask=group_pop>min_group_pop;
+group_mask_index=col_vec(1:numel(grouped_values));
+group_mask_index=group_mask_index(group_mask);
+operation_on_group=@(y) arrayfun(@(x) y(signal_unbinned.freq(group_idx==x)),group_mask_index);
+
+
+suggested_limits=[min(grouped_values),max(grouped_values)]
+suggested_bins=numel(grouped_values)+1;
 suggested_bin_width=mean(diff(grouped_values));
 bin_width=2;
 
-%probe_freq_bins=col_vec(linspace(-40-bin_width/2,40+bin_width/2,41));
-probe_freq_bins=[-10,10,100]
+%probe_freq_bins=col_vec(linspace(-70,70,42));
+%probe_freq_bins=col_vec(linspace(min(suggested_limits)-bin_width/2,max(suggested_limits)+bin_width/2,suggested_bins));
+%probe_freq_bins=col_vec(linspace(-33.4-bin_width/2,20.7+bin_width/2,42));
+%probe_freq_bins=col_vec(linspace(-40-bin_width/2,40+bin_width/2,81));
+% probe_freq_bins=[-10,10,100]
 %probe_freq_bins=col_vec(linspace(-25,20,9));
+
+probe_freq_bins=cat(1,operation_on_group(@min)-100*eps,inf);
+
 iimax=numel(probe_freq_bins)-1;
+signal_bined.freq_std=nan(iimax,1);
+signal_bined.val=nan(iimax,1);
+signal_bined.unc_val=nan(iimax,1);
+signal_bined.freq_mean=nan(iimax,1);
+signal_bined.freq_obs_min_max_mean_diff=nan(iimax,2);
 for ii=1:iimax
     signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
-    bin_mask=signal_unbinned.freq<probe_freq_bins(ii+1) & signal_unbinned.freq>probe_freq_bins(ii);
+    bin_mask=signal_unbinned.freq<=probe_freq_bins(ii+1) & signal_unbinned.freq>probe_freq_bins(ii);
+     signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
     if sum(bin_mask)==0
         warning('no elements')
+        signal_bined.num_bin(ii)=0;
     else
-    signal_bined.val(ii,:)=nanmean(signal_unbinned.val(bin_mask,:),1);
-    %sum(bin_mask)
-    %std(signal_unbinned.val(bin_mask))
-    signal_bined.unc_val(ii,:)=nanstd(signal_unbinned.val(bin_mask,:),[],1)./sqrt(sum(bin_mask));
-    signal_bined.num_bin(ii)=sum(bin_mask);
-    signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
-    signal_bined.freq_mean(ii)=nanmean(signal_unbinned.freq(bin_mask));
-    signal_bined.freq_std(ii)=nanstd(signal_unbinned.freq(bin_mask));
-    signal_bined.freq_obs_min_max(ii,:)=[min(signal_unbinned.freq(bin_mask)),max(signal_unbinned.freq(bin_mask))];
-    signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
-    signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
-    signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.num_bin(ii)=sum(bin_mask);
+        signal_bined.val(ii,:)=nanmean(signal_unbinned.val(bin_mask,:),1);
+        %sum(bin_mask)
+        %std(signal_unbinned.val(bin_mask))
+        signal_bined.unc_val(ii,:)=nanstd(signal_unbinned.val(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+        signal_bined.freq_mean(ii)=nanmean(signal_unbinned.freq(bin_mask));
+        signal_bined.freq_std(ii)=nanstd(signal_unbinned.freq(bin_mask));
+        signal_bined.freq_obs_min_max(ii,:)=[min(signal_unbinned.freq(bin_mask)),max(signal_unbinned.freq(bin_mask))];
+        signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
      end
 end
 
-stfig('counts vs probe freq');
+stfig('counts vs probe freq normalised');
 clf
 
 gauss_fun1d = @(b,x) b(1).*exp(-((x-b(2)).^2)./(2*b(3).^2))+b(4); 
@@ -399,7 +438,7 @@ for signal_idx=1:tot_plots
     ydata_shifted =ydata-min(ydata);
     mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
     %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
-    sig_guess=5;
+    sig_guess=10;
     fo = statset('TolFun',10^-6,...
         'TolX',1e-4,...
         'MaxIter',1e4,...
@@ -415,8 +454,11 @@ for signal_idx=1:tot_plots
     x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
     [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
     hold on
-    plot(x_sample_fit,ysamp_ci*ymultipler,'color',[1,1,1].*0.5)
     plot(x_sample_fit,ysamp_val*ymultipler,'r')
+    drawnow
+    yl=ylim;
+    plot(x_sample_fit,ysamp_ci*ymultipler,'color',[1,1,1].*0.5)
+    ylim(yl)
     % show the inital guess
     %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
     fitobject
@@ -437,7 +479,7 @@ for signal_idx=1:tot_plots
     
 end
 
-
+saveas(gca,fullfile(anal_opts.global.out_dir,'signal_fits.png'))
 
 
 %%

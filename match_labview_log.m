@@ -13,10 +13,20 @@ data.mcp_tdc.probe.calibration=[];
 
 imax=min([size(data.labview.time,2),size(data.mcp_tdc.time_create_write,1)]);
 %imax=5000;
+
+%TODO: this next line assumes that everything is in sync, it would be
+%better to find the min diff time for each
 time_diff=data.mcp_tdc.time_create_write(1:imax,2)'-anal_opts.dld_aquire-anal_opts.trig_dld-...
     data.labview.time(1:imax);
-mean_delay_labview_tdc=0;%median(time_diff);
 
+med_time=median(time_diff);
+if med_time<anal_opts.dld_aquire && med_time*2>time_thresh
+    warning('times are not synced check that computers are syncing clocks')
+    mean_delay_labview_tdc=med_time;%median(time_diff);
+else
+    mean_delay_labview_tdc=0;
+end
+    
 stfig('diagnostics and veto','add_stack',1);
 subplot(4,1,2)
 plot(data.mcp_tdc.shot_num(1:imax),time_diff-mean_delay_labview_tdc,'k')

@@ -24,7 +24,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190708_forbidden427_heating_method\';
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190714_forbidden427_heating_method_pol_circ1';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];

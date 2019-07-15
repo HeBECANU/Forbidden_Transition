@@ -42,7 +42,7 @@ det_frac_vec=col_vec(cellfun(@(x) x.detected.fraction,outs));
 
 %%
 stfig('rf knife freq depedence')
-plot(rf_knife_freqs*1e-3,det_frac_vec,'xk')
+plot(1700+rf_knife_freqs*1e-3,det_frac_vec,'xk')
 xlabel('rf freq (khz)')
 ylabel('detected fraction of scattered')
 
