@@ -105,38 +105,44 @@ is_cal(isnan(is_cal))=0;
 is_freq_good=data.wm_log.proc.probe.freq.act.std<5 &...
     (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<5 &...
     ~is_cal;
-
+is_freq_good_cal=data.wm_log.proc.probe.freq.act.std<5 &...
+    (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<5 &...
+    is_cal;
 probe_freq=data.wm_log.proc.probe.freq.act.mean*2;%freq in blue
 probe_freq=probe_freq-predicted_freq;
 
 if num_fit_param==3
-    signal_unbinned.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good,2),thermal_fit.fit_coeff.Estimate(is_freq_good,3),thermal_fit.fit_coeff.Estimate(is_freq_good,1),mean_first_few(is_freq_good,1));
+    signal_unbinned.msr.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good,2),thermal_fit.fit_coeff.Estimate(is_freq_good,3),thermal_fit.fit_coeff.Estimate(is_freq_good,1),mean_first_few(is_freq_good,1));
     signal_unbinned.names={'fit grad','fit quad','fit inital term','mean of temp for first few'};
     signal_unbinned.ystr={'heating rate (nk/s)','heating rate (nk/s^2)','temp. (uk)','temp. (uk)'};
     signal_unbinned.ymult=[1e9,1e9,1e7,1e7];
-    signal_unbinned.freq=probe_freq(is_freq_good);
+    signal_unbinned.msr.freq=probe_freq(is_freq_good);
+    signal_unbinned.cal.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good_cal,2),thermal_fit.fit_coeff.Estimate(is_freq_good_cal,3),thermal_fit.fit_coeff.Estimate(is_freq_good_cal,1),mean_first_few(is_freq_good_cal,1));
+    signal_unbinned.cal.freq=probe_freq(is_freq_good_cal);
 elseif num_fit_param==2
-    signal_unbinned.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good,2),thermal_fit.fit_coeff.Estimate(is_freq_good,1),mean_first_few(is_freq_good,1));
+    signal_unbinned.msr.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good,2),thermal_fit.fit_coeff.Estimate(is_freq_good,1),mean_first_few(is_freq_good,1));
     signal_unbinned.names={'fit grad','fit inital term','mean of temp for first few'};
     signal_unbinned.ystr={'heating rate (nk/s)','temp. (uk)','temp. (uk)'};
     signal_unbinned.ymult=[1e9,1e9,1e7,1e7];
-    signal_unbinned.freq=probe_freq(is_freq_good);
+    signal_unbinned.msr.freq=probe_freq(is_freq_good);
+    signal_unbinned.cal.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good_cal,2),thermal_fit.fit_coeff.Estimate(is_freq_good_cal,1),mean_first_few(is_freq_good_cal,1));
+    signal_unbinned.cal.freq=probe_freq(is_freq_good_cal);
 end
 
-fprintf('unbinned standard deviation of temp gradient %f nk/s \n',nanstd(signal_unbinned.val(:,1))*1e9)
+fprintf('unbinned standard deviation of temp gradient %f nk/s \n',nanstd(signal_unbinned.msr.val(:,1))*1e9)
 
 
 signal_bined=[];
-probe_freq_bins=col_vec(linspace(-80,80,60));
-%probe_freq_bins=col_vec(linspace(-25,20,9));
+%probe_freq_bins=col_vec(linspace(-80,80,60));
+probe_freq_bins=col_vec(linspace(-25,20,25));
 iimax=numel(probe_freq_bins)-1;
 for ii=1:iimax
     signal_bined.freq_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
-    bin_mask=signal_unbinned.freq<probe_freq_bins(ii+1) & signal_unbinned.freq>probe_freq_bins(ii);
-    signal_bined.val(ii,:)=nanmean(signal_unbinned.val(bin_mask,:),1);
+    bin_mask=signal_unbinned.msr.freq<probe_freq_bins(ii+1) & signal_unbinned.msr.freq>probe_freq_bins(ii);
+    signal_bined.val(ii,:)=nanmean(signal_unbinned.msr.val(bin_mask,:),1);
     %sum(bin_mask)
     %std(signal_unbinned.val(bin_mask))
-    signal_bined.unc_val(ii,:)=nanstd(signal_unbinned.val(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+    signal_bined.unc_val(ii,:)=nanstd(signal_unbinned.msr.val(bin_mask,:),[],1)./sqrt(sum(bin_mask));
     
     signal_bined.freq(ii)=nanmean(probe_freq_bins(ii:ii+1));
     signal_bined.freq_lims_diff(ii,:)=abs(signal_bined.freq_lims(ii,:)-signal_bined.freq(ii));
@@ -145,13 +151,13 @@ end
 stfig('counts vs probe freq')
 clf
 
-tot_plots=size(signal_unbinned.val,2);
+tot_plots=size(signal_unbinned.msr.val,2);
 signal_idx=1;
 for signal_idx=1:tot_plots
     ymultipler=signal_unbinned.ymult(signal_idx);
     ylabel_str=signal_unbinned.ystr(signal_idx);
     subplot(2,tot_plots,0+signal_idx)
-    plot(signal_unbinned.freq,signal_unbinned.val(:,signal_idx)*ymultipler,'x')
+    plot(signal_unbinned.msr.freq,signal_unbinned.msr.val(:,signal_idx)*ymultipler,'x')
     xlabel('freq-theory (MHz)')
     %ylabel('heating rate (nk/s)')
     ylabel(ylabel_str)
@@ -180,7 +186,7 @@ end
 
 
 
-output=[];
+output=signal_unbinned;
 
 
 

@@ -25,7 +25,7 @@ coeff_names={'amp','mu','sig','offset'};
 
 fprintf('fitting A.L. pulses in files %04u:%04u',size(mcp_data.counts_txy,2),0)
 first_good_shot=true;
-for shot=1:iimax
+for shot=2:iimax
         shot_txy_counts=mcp_data.counts_txy{shot};
         if mcp_data.all_ok(shot) & numel(shot_txy_counts)>1e3;
             for pulse=1:anal_opts.pulses

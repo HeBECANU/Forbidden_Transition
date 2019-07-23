@@ -1,10 +1,13 @@
 %% Data analysis for Helium forbidden transition spectroscopy
 %% To do
-% - Total atom number calibration
-% - reintroduce ai import
-%   - add total integrated power calibration
-%   - add ai checks (mainly when laser is multi mode)
-% - general organisation and commenting
+% - Remove correlations to atom number []
+% - reintroduce ai import [x]
+%   - add total integrated power calibration [x]
+%   - add ai checks (mainly when laser is multi mode) []
+% - Create functionanilty to combine multiple runs together (wm drift model
+% mainly) []
+% - ensure masking is optimal
+% - general organisation and commenting []
 %%
 % clear all;
 % Remove old data dirs from path
@@ -30,8 +33,13 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-%anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det\';
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\'
+% anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190713_forbidden427_direct_det_narrow\';
+%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol
+%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det_narrow_dither_on
+%Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det
+
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190721_weekend_run\'
+% anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol_half_pow\'
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -87,39 +95,43 @@ data=match_labview_log(data,anal_opts)
 %% Import the analog log files
 %TODO
 % modify to return the integrated pd signal
-
-
-% anal_opts.ai_log.dir=anal_opts.tdc_import.dir;
-% anal_opts.ai_log.force_reimport=false;
-% anal_opts.ai_log.force_load_save=false;
-% anal_opts.ai_log.log_name='log_analog_in_';
-% %because im only passing the ai_log feild to aviod conflicts forcing a reimport i need to coppy these feilds
-% anal_opts.ai_log.calibration=data.mcp_tdc.probe.calibration;
-% anal_opts.ai_log.pd.set_probe=anal_opts.probe_set_pt;
-% anal_opts.ai_log.trig_dld=anal_opts.trig_dld;
-% anal_opts.ai_log.dld_aquire=anal_opts.dld_aquire;
-% anal_opts.ai_log.aquire_time=anal_opts.dld_aquire;
-% anal_opts.ai_log.trig_ai_in=anal_opts.trig_ai_in;
-% % set time matching conditions
-% anal_opts.ai_log.aquire_time=4;
-% anal_opts.ai_log.pd.diff_thresh=0.05;
-% anal_opts.ai_log.pd.std_thresh=0.05;
-% anal_opts.ai_log.pd.time_start=0.2;
-% anal_opts.ai_log.pd.time_stop=2;
-% anal_opts.ai_log.time_match_valid=8; %how close the predicted start of the shot is to the actual
-% %sfp options
-% anal_opts.ai_log.scan_time=1/20; %fast setting 1/100hz %estimate of the sfp scan time,used to set the window and the smoothing
-% anal_opts.ai_log.sfp.num_checks=inf; %how many places to check that the laser is single mode, inf=all scans
-% anal_opts.ai_log.sfp.peak_thresh=[-0.005,-0.005];%[0,-0.008]*1e-3; %theshold on the compressed signal to be considered a peak
-% anal_opts.ai_log.sfp.pzt_dist_sm=4.5;%minimum (min peak difference)between peaks for the laser to be considered single mode
-% anal_opts.ai_log.sfp.pzt_peak_width=0.15; %peak with in pzt voltage used to check that peaks are acually different and not just noise
-% anal_opts.ai_log.plot.all=false;
-% anal_opts.ai_log.plot.failed=true;
+% fix multimode detection
 % 
-% %do the ac waveform fit
-% anal_opts.ai_log.do_ac_mains_fit=false;
-% 
-% data.ai_log=ai_log_import(anal_opts.ai_log,data);
+use_ai = 1;
+if use_ai
+anal_opts.ai_log.dir=anal_opts.tdc_import.dir;
+anal_opts.ai_log.force_reimport=false;
+anal_opts.ai_log.force_load_save=false;
+anal_opts.ai_log.log_name='log_analog_in_';
+%because im only passing the ai_log feild to aviod conflicts forcing a reimport i need to coppy these feilds
+anal_opts.ai_log.calibration=data.mcp_tdc.probe.calibration;
+anal_opts.ai_log.pd.set_probe=1.1;%anal_opts.probe_set_pt;
+anal_opts.ai_log.trig_dld=anal_opts.trig_dld;
+anal_opts.ai_log.dld_aquire=anal_opts.dld_aquire;
+anal_opts.ai_log.aquire_time=anal_opts.dld_aquire;
+anal_opts.ai_log.trig_ai_in=3.0;%anal_opts.trig_ai_in;
+% set time matching conditions
+anal_opts.ai_log.aquire_time=21;
+anal_opts.ai_log.pd.diff_thresh=0.5;
+anal_opts.ai_log.pd.std_thresh=0.5;
+anal_opts.ai_log.pd.time_start=0.0;
+anal_opts.ai_log.pd.time_stop=21;
+anal_opts.ai_log.time_match_valid=16; %how close the predicted start of the shot is to the actual
+%sfp options
+anal_opts.ai_log.scan_time=1.1; %fast setting 1/100hz %estimate of the sfp scan time,used to set the window and the smoothing
+anal_opts.ai_log.sfp.num_checks=inf; %how many places to check that the laser is single mode, inf=all scans
+anal_opts.ai_log.sfp.peak_thresh=[0,0];%[0,-0.008]*1e-3; %theshold on the compressed signal to be considered a peak
+anal_opts.ai_log.sfp.pzt_dist_sm=4.5;%minimum (min peak difference)between peaks for the laser to be considered single mode
+anal_opts.ai_log.sfp.pzt_peak_width=0.5; %peak with in pzt voltage used to check that peaks are acually different and not just noise
+anal_opts.ai_log.plot.all=0;
+anal_opts.ai_log.plot.failed=0;
+
+%do the ac waveform fit
+anal_opts.ai_log.do_ac_mains_fit=false;
+
+data.ai_log=ai_log_import(anal_opts.ai_log,data);
+%data.ai_log.pd.mean gives the average pd value
+end
 %%
 
 anal_opts.wm_log.dir=anal_opts.tdc_import.dir;
@@ -177,6 +189,7 @@ anal_opts.hotspot_mask.circ_mask=[[0,0,35e-3,1];
                             [13.78e-3,31.62e-3,3e-3,0];
                             [21.26e-3,25.95e-3,3e-3,0];
                             [30.36e-3,-12.52e-3,5e-3,0];
+                            [-10.6e-3,15.56e-3,1.5e-3,0];
                               ];
 do_mask=true;
 
@@ -265,7 +278,7 @@ end
 
 %% creation of the signal
 
-data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>50e3;
+data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>10e3;
 data.signal.raw=[];
 data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts);% %./data.mcp_tdc.num_counts
 %data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts./data.mcp_tdc.masked.tot_num_counts);% %./data.mcp_tdc.num_counts
@@ -306,10 +319,15 @@ color_shaded=colorspace('LCH->RGB',color_shaded);
 is_cal=data.mcp_tdc.probe.calibration;
 is_cal(isnan(is_cal))=1;
 
-is_shot_good=data.wm_log.proc.probe.freq.act.std<5 &...
-    (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<10 &...
-    ~is_cal;
-
+if ~use_ai
+    is_shot_good=data.wm_log.proc.probe.freq.act.std<5 &...
+        (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<10 &...
+        ~is_cal;
+else
+    is_shot_good=data.wm_log.proc.probe.freq.act.std<5 &...
+        (data.wm_log.proc.probe.freq.set-data.wm_log.proc.probe.freq.act.mean)<10 &...
+        ~is_cal & ~data.ai_log.ok.sfp;
+end
 
 probe_freq=data.wm_log.proc.probe.freq.act.mean*2;%freq in blue
 probe_freq=probe_freq-predicted_freq;
@@ -332,7 +350,7 @@ fprintf('unbinned standard deviation of counts %f \n',nanstd(signal_unbinned.val
 
 
 signal_bined=[];
-[grouped_values,group_pop,group_idx]=uniquetol(signal_unbinned.freq,0.01);
+[grouped_values,group_pop,group_idx]=uniquetol(signal_unbinned.freq,0.03);
 min_group_pop=2;
 group_mask=group_pop>min_group_pop;
 group_mask_index=col_vec(1:numel(grouped_values));
@@ -480,8 +498,234 @@ for signal_idx=1:tot_plots
 end
 
 saveas(gca,fullfile(anal_opts.global.out_dir,'signal_fits.png'))
+clear out_data
+out_data.signal = data.signal;
+out_data.freq = probe_freq;
+out_data.atom_num = data.mcp_tdc.masked.tot_num_counts;
+out_data.integrated_pd = data.ai_log.pd.integrated;
+out_data.probe_num = data.mcp_tdc.masked.num_counts;
+out_data.time = data.mcp_tdc.time_create_write(:,2);
+out_data.is_shot_good = is_shot_good;
+
+save(fullfile(anal_opts.global.out_dir,'data_results.mat'),'out_data')
+
+%% residuals
+freq_window = [3.5,7];
+        
+not_empty_shots=~cellfun(@isempty,data.mcp_tdc.masked.counts_txy);
+freq_mask=signal_unbinned.freq<=freq_window(2) & signal_unbinned.freq>freq_window(1);
+
+int_pd = data.ai_log.pd.integrated(is_shot_good);
+int_pd = int_pd(is_not_oulier);
+int_num = data.mcp_tdc.masked.num_counts(is_shot_good);
+int_num = int_num(is_not_oulier);
+atom_num = data.mcp_tdc.masked.tot_num_counts(is_shot_good);
+atom_num = atom_num(is_not_oulier);
+ypred_val=predict(fitobject,signal_unbinned.freq,'Prediction','curve','Alpha',1-erf(1/sqrt(2)));
+res = signal_unbinned.val - ypred_val;
+sfigure(345);
+clf
+plot(res)
+xlabel('residuals')
+ylabel('shot indx')
+sfigure(456);
+clf
+res_mdl = corr_plot(int_num,res,ones(size(res)))
+ylabel('res')
+xlabel('background counts')
+sfigure(567);
+clf
+corr_plot(atom_num,res,ones(size(res)))
+ylabel('res')
+xlabel('total atom counts')
+sfigure(678);
+clf
+corr_plot(signal_unbinned.freq,res,ones(size(res)))
+ylabel('res')
+xlabel('freq - theory (MHz)')
+sfigure(123)
+clf
+corr_plot(int_pd(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('average pd voltage')
+
+%%
+if false
+stfig('residual correlations removed');
+clf
+subplot(2,1,1)
+xdata = signal_unbinned.freq;
+ydata = signal_unbinned.val - predict(res_mdl,int_num');
+scatter(xdata,ydata,'x')
+amp_guess=max(ydata);
+ydata_shifted =ydata-min(ydata);
+mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
+%sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
+sig_guess=10;
+fo = statset('TolFun',10^-6,...
+    'TolX',1e-4,...
+    'MaxIter',1e4,...
+    'UseParallel',1);
+% 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
+inital_guess=[amp_guess,mu_guess,sig_guess,0];
+fitobject_adj=fitnlm(xdata,ydata,...
+    gauss_fun1d,...
+     inital_guess,...
+    'CoefficientNames',coeff_names,'Options',fo);
+fit_coeff=fitobject_adj.Coefficients.Estimate;
+fit_se=fitobject_adj.Coefficients.SE;
+x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
+[ysamp_val,ysamp_ci]=predict(fitobject_adj,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+hold on
+plot(x_sample_fit,ysamp_val*ymultipler,'r')
+drawnow
+yl=ylim;
+plot(x_sample_fit,ysamp_ci*ymultipler,'color',[1,1,1].*0.5)
+ylim(yl)
+amp_str=string_value_with_unc(fitobject_adj.Coefficients.Estimate(1),fitobject_adj.Coefficients.SE(1),'b');
+cen_str=string_value_with_unc(fitobject_adj.Coefficients.Estimate(2),fitobject_adj.Coefficients.SE(2),'b');
+width_str=string_value_with_unc(abs(fitobject_adj.Coefficients.Estimate(3)),fitobject_adj.Coefficients.SE(3),'b');
+offset_str=string_value_with_unc(abs(fitobject_adj.Coefficients.Estimate(3)),fitobject_adj.Coefficients.SE(3),'b');
+width_units='MHz';
+offset_units='counts';
+amp_units='counts';
+str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   Offset %s %s',...
+    cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
+text(0.01,0.9,str,'Units','normalized');
+
+subplot(2,1,2)
+xtemp=col_vec(signal_bined.freq_mean);
+ytemp=signal_bined.val(:,signal_idx);
+plot(xtemp,ytemp*ymultipler,'x','MarkerSize',5)
+hold on
+for ii=1:iimax
+    signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
+    bin_mask=signal_unbinned.freq<=probe_freq_bins(ii+1) & signal_unbinned.freq>probe_freq_bins(ii);
+     signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
+    if sum(bin_mask)==0
+        warning('no elements')
+        signal_bined.num_bin(ii)=0;
+    else
+        signal_bined.num_bin(ii)=sum(bin_mask);
+        signal_bined.val(ii,:)=nanmean(ydata(bin_mask,:),1);
+        %sum(bin_mask)
+        %std(signal_unbinned.val(bin_mask))
+        signal_bined.unc_val(ii,:)=nanstd(ydata(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+        signal_bined.freq_mean(ii)=nanmean(signal_unbinned.freq(bin_mask));
+        signal_bined.freq_std(ii)=nanstd(signal_unbinned.freq(bin_mask));
+        signal_bined.freq_obs_min_max(ii,:)=[min(signal_unbinned.freq(bin_mask)),max(signal_unbinned.freq(bin_mask))];
+        signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
+     end
+end
+
+xdata=col_vec(signal_bined.freq_mean);
+ydata=signal_bined.val(:,signal_idx);
+yunc=signal_bined.unc_val(:,signal_idx);
 
 
+%plot(col_vec(signal_bined.freq_bin_cen),ydata*ymultipler,'x')
+plot(xdata,ydata*ymultipler,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
+errorbar(xdata,ydata*ymultipler,...
+    signal_bined.unc_val(:,signal_idx)*ymultipler,signal_bined.unc_val(:,signal_idx)*ymultipler,...
+    signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
+    'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+    'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+end
+%% structure in the noise
+anal_opts.plot2d.do=false;
+if anal_opts.plot2d.do
+    anal_opts.signal=[];
+    anal_opts.plot2d.lim.x=[-45,45]*1e-3;
+    anal_opts.plot2d.lim.y=[-45,45]*1e-3;
+    anal_opts.plot2d.nbins=4e2;
+    anal_opts.plot2d.blur=3;
+    anal_opts.plot2d.cmp_dyn_range=false;
+    freq_window = [4,6];
+    
+    
+    
+    not_empty_shots=~cellfun(@isempty,data.mcp_tdc.masked.counts_txy);
+    bin_mask=signal_unbinned.freq<=freq_window(2) & signal_unbinned.freq>freq_window(1);
+    
+    temp_txy=data.mcp_tdc.masked.counts_txy(is_shot_good);
+    temp_txy=temp_txy(is_not_oulier);
+    temp_txy=temp_txy(bin_mask);
+    num_shots_probe = size(temp_txy,1);
+    probe_txy=cat(1,temp_txy{:});
+    
+    cal_txy=cat(1,data.mcp_tdc.masked.counts_txy{logical(is_cal)});
+    num_shots_cal = size(cal_txy,1);
+    
+    all_txy = probe_txy;
+    dyn_range_pow=0.2;
+    num_bins=anal_opts.plot2d.nbins;
+    edge_x=linspace(min(anal_opts.plot2d.lim.x),max(anal_opts.plot2d.lim.x),num_bins);
+    edge_y=linspace(min(anal_opts.plot2d.lim.y),max(anal_opts.plot2d.lim.y),num_bins);
+    
+    spatial_blur=anal_opts.plot2d.blur;
+    bin_area=(range(anal_opts.plot2d.lim.x)/num_bins)*(range(anal_opts.plot2d.lim.x)/num_bins);
+    [counts,centers]=hist3(all_txy(:,2:3),'edges',{edge_x,edge_y});
+    counts=counts/bin_area;
+    counts=counts/num_shots_probe;
+    
+    [cal_counts,cal_centers]=hist3(cal_txy(:,2:3),'edges',{edge_x,edge_y});
+    cal_counts=cal_counts/bin_area;
+    cal_counts=cal_counts/num_shots_cal;
+    
+    %imagesc seems to plot the wrong way round so we transpose here
+    
+    if anal_opts.plot2d.cmp_dyn_range
+        counts=counts.^dyn_range_pow;
+    end
+    if  ~spatial_blur==0
+        counts=imgaussfilt(counts,spatial_blur);
+        cal_counts=imgaussfilt(counts,spatial_blur);
+    end
+    stfig('counts during probe')
+    imagesc(10^3*centers{1},10^3*centers{2},transpose(counts))
+    colormap(viridis())
+    set(gca,'Ydir','normal')
+    set(gcf,'Color',[1 1 1]);
+    title('Spatial Dist. TOP')
+    xlabel('X(mm)')
+    ylabel('Y(mm)')
+    h=colorbar;
+    if anal_opts.plot2d.cmp_dyn_range
+        xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
+    else
+        xlabel(h,'Count Density (m^{-2})')
+    end
+    stfig('counts during cal')
+    imagesc(10^3*centers{1},10^3*centers{2},transpose(cal_counts))
+    colormap(viridis())
+    set(gca,'Ydir','normal')
+    set(gcf,'Color',[1 1 1]);
+    title('Spatial Dist. TOP')
+    xlabel('X(mm)')
+    ylabel('Y(mm)')
+    h=colorbar;
+    if anal_opts.plot2d.cmp_dyn_range
+        xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
+    else
+        xlabel(h,'Count Density (m^{-2})')
+    end
+    stfig('dif in counts')
+    imagesc(10^3*centers{1},10^3*centers{2},transpose(counts-cal_counts))
+    colormap(viridis())
+    set(gca,'Ydir','normal')
+    set(gcf,'Color',[1 1 1]);
+    title('Spatial Dist. TOP')
+    xlabel('X(mm)')
+    ylabel('Y(mm)')
+    h=colorbar;
+    if anal_opts.plot2d.cmp_dyn_range
+        xlabel(h,sprintf('Count Density^{%.2f} (m^{-2})',dyn_range_pow))
+    else
+        xlabel(h,'Count Density (m^{-2})')
+    end
+end
 %%
 % import_opts.signal=[];
 % import_opts.signal.plot.lim.x=[-45,45]*1e-3;

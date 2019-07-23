@@ -1,0 +1,267 @@
+% anal_opts.tdc_import.dir=;
+
+
+
+
+
+%might need an extra wavemeter point for this guy
+
+
+
+
+%
+
+%
+
+%
+%
+%Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det\
+%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det_narrow_dither_on\
+%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190713_forbidden427_direct_det_narrow\
+%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol\
+%Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190704_forbidden_long interrogation\
+%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden_Rf_2.00\
+
+
+%combine the data from each director (all we need is the signal corrected
+%for wvm drift)
+
+%also need to acount for background correlation and pd variations as well
+
+% wm drift model
+%format unix time, offset, unc
+wm_offset = [1.563278643754e9,-0.71111273765563965,0.001339
+1.563183199886e9,-1.1711589097976685,  nan
+1.563115846138e9,-1.7073591947555542, nan
+1.563016150706e9,-0.57892698049545288, nan
+1.562933976169e9,-2.6968891024589539, nan
+1.562861326011e9,-3.2293498516082764, nan
+1.562724583967e9,-1.4483662247657776, nan
+1.562724143194e9,-1.1263280510902405, nan
+1.562212485100000e9,-1.1263280510902405, nan %this a bit dodge
+1.563351007675000e+09,-1.1711589097976685,  nan %remove this one later
+];
+
+data_dirs = {'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190713_forbidden427_direct_det_narrow\'
+    'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det_narrow_dither_on\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det\'
+    %'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190704_forbidden_long interrogation\'
+    'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol\'
+    'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden_Rf_2.00\'
+    };
+%%
+data.signal = [];
+data.freq = [];
+data.time = [];
+data.atom_num = [];
+data.probe_num = [];
+data.integrated_pd = [];
+data.is_shot_good = [];
+
+for loop_idx=1:length(data_dirs)
+    current_dir = data_dirs{loop_idx};
+    fprintf('importing data from \n %s \n',current_dir)
+    if ~strcmp(current_dir(end),'\')
+        current_dir = [current_dir,'\'];
+    end
+    out_dirs=dir(fullfile(current_dir,'out'));
+    out_dirs=out_dirs(3:end);
+    out_dirs=out_dirs(cat(1,out_dirs.isdir));
+    if size(out_dirs,1)==0
+        warning(sprintf('dir \n %s \n does not contain any out dirs',current_dir)), 
+    else 
+        % convert the folder name (iso time) to posix time
+        time_posix=cellfun(@(x) posixtime(datetime(datenum(x,'yyyymmddTHHMMSS'),'ConvertFrom','datenum')),{out_dirs.name});
+        [~,sort_idx]=sort(time_posix,'descend');
+        out_dirs=out_dirs(sort_idx);
+        looking_for_data_dir=1;
+        folder_index=1;
+        %runs through all the out put dirs for a given run and looks for saved data, if none is there
+        %skips that data dir
+        while looking_for_data_dir
+            try
+                out_instance_folder_path=fullfile(current_dir,'out',out_dirs(folder_index).name,'data_results.mat');
+                if (exist(out_instance_folder_path,'file') || ...
+                    exist(out_instance_folder_path,'file')) && ...
+                    exist(out_instance_folder_path,'file')
+                    looking_for_data_dir=0;
+                else
+                    folder_index=folder_index+1;
+                    if folder_index>numel(out_dirs) %if beyon the end of the folder list return nan;
+                         looking_for_data_dir=0;
+                         folder_index=nan;
+                         warning('did not find a valid output direcory for folder %s',current_dir)
+                    end
+                end
+                %~and(isfile([current_dir,'out\',most_recent_dir.name,'\main_data.mat']),isfile([current_dir,'out\',most_recent_dir.name,'\drift_data.mat']))
+                %offset = offset + 1;
+                %most_recent_dir=out_dirs(end-offset,1);
+                %check = drift_data.avg_coef; %check if it has the avg coefs update
+
+            catch e
+                fprintf('\n dir: %s didnt work \n',current_dir)
+                msgText = getReport(e)
+                continue
+            end
+        end
+        if ~isnan(folder_index)
+
+            load(fullfile(current_dir,'out',out_dirs(folder_index).name,'data_results.mat'))
+            % now do some serious data plumbing
+            %append to main structure
+            
+            data.signal = cat(1,data.signal,out_data.signal.cal.calibrated_signal.val);
+            data.freq = cat(1,data.freq,out_data.freq);
+            data.time = cat(1,data.time,out_data.time);
+            data.atom_num = cat(1,data.atom_num,out_data.atom_num');
+            data.probe_num = cat(1,data.probe_num,out_data.probe_num');
+            data.integrated_pd = cat(1,data.integrated_pd,out_data.integrated_pd);
+            data.is_shot_good = cat(1,data.is_shot_good,out_data.is_shot_good);
+%             if ~isequal(size(drift_data_compiled.to.val),size(drift_data_compiled.wp.qwp))
+%                 error('things are not the same size') 
+%             end
+
+        end
+    end
+end
+%% create drift model
+data.is_shot_good = logical(data.is_shot_good);
+offset = interp1(wm_offset(:,1),wm_offset(:,2),data.time);%,'spline');
+
+gauss_fun1d = @(b,x) b(1).*exp(-((x-b(2)).^2)./(2*b(3).^2))+b(4);
+loren_fun1d = @(b,x) b(1)./((x-b(2)).^2+b(3).^2) + b(4);
+coeff_names={'amp','mu','sig','offset'};
+
+xdata=data.freq(data.is_shot_good) - offset(data.is_shot_good);
+ydata=data.signal(data.is_shot_good)./data.atom_num(data.is_shot_good);
+
+pd_tol = 5;
+sigma_from_mean=(ydata-nanmean(ydata,1))/nanstd(ydata,1);
+is_not_oulier=sigma_from_mean<7 & data.integrated_pd(data.is_shot_good)>pd_tol;
+ydata=ydata(is_not_oulier);% - predict(res_mdl_ratio,int_num./atom_num);
+xdata=xdata(is_not_oulier);
+
+num_bins = 200;
+
+probe_freq_bins = linspace(min(xdata),max(xdata),num_bins);
+
+
+
+iimax=numel(probe_freq_bins)-1;
+signal_bined.freq_std=nan(iimax,1);
+signal_bined.val=nan(iimax,1);
+signal_bined.unc_val=nan(iimax,1);
+signal_bined.freq_mean=nan(iimax,1);
+signal_bined.freq_obs_min_max_mean_diff=nan(iimax,2);
+for ii=1:iimax
+    signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
+    bin_mask=xdata<=probe_freq_bins(ii+1) & xdata>probe_freq_bins(ii);
+     signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
+    if sum(bin_mask)==0
+        warning('no elements')
+        signal_bined.num_bin(ii)=0;
+    else
+        signal_bined.num_bin(ii)=sum(bin_mask);
+        signal_bined.val(ii,:)=nanmean(ydata(bin_mask,:),1);
+        signal_bined.unc_val(ii,:)=nanstd(ydata(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+        signal_bined.freq_mean(ii)=nanmean(xdata(bin_mask));
+        signal_bined.freq_std(ii)=nanstd(xdata(bin_mask));
+        signal_bined.freq_obs_min_max(ii,:)=[min(xdata(bin_mask)),max(xdata(bin_mask))];
+        signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
+     end
+end
+stfig('combined data')
+clf
+plot(signal_bined.freq_mean,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
+    errorbar(signal_bined.freq_mean,signal_bined.val,...
+        signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
+         signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
+        'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+         'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+
+    
+    amp_guess=max(ydata);
+    ydata_shifted =ydata-min(ydata);
+    mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
+    %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
+    sig_guess=10;
+    fo = statset('TolFun',10^-6,...
+        'TolX',1e-4,...
+        'MaxIter',1e4,...
+        'UseParallel',1);
+    % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
+    inital_guess=[amp_guess,mu_guess,sig_guess,0];
+    fitobject=fitnlm(xdata,ydata,...
+        gauss_fun1d,...
+         inital_guess,...
+        'CoefficientNames',coeff_names,'Options',fo);
+    fit_coeff=fitobject.Coefficients.Estimate;
+    fit_se=fitobject.Coefficients.SE;
+    x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
+    [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+    hold on
+    plot(x_sample_fit,ysamp_val,'r')
+    drawnow
+    yl=ylim;
+    plot(x_sample_fit,ysamp_ci,'color',[1,1,1].*0.5)
+    ylim(yl)
+    % show the inital guess
+    %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
+    fitobject
+    amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1),fitobject.Coefficients.SE(1),'b');
+    cen_str=string_value_with_unc(fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2),'b');
+    width_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
+    offset_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
+    width_units='MHz';
+    offset_units='counts';
+    amp_units='counts';
+    str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   Offset %s %s',...
+        cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
+    text(0.01,0.9,str,'Units','normalized'); 
+    
+    fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
+%% residuals
+freq_window = [-60,60];
+        
+freq_mask=signal_unbinned.freq<=freq_window(2) & signal_unbinned.freq>freq_window(1);
+int_pd = data.integrated_pd(data.is_shot_good);
+int_pd = int_pd(is_not_oulier);
+int_num = data.probe_num(data.is_shot_good);
+int_num = int_num(is_not_oulier);
+atom_num = data.atom_num(data.is_shot_good);
+atom_num = atom_num(is_not_oulier);
+ypred_val=predict(fitobject,xdata,'Prediction','curve','Alpha',1-erf(1/sqrt(2)));
+res = ydata - ypred_val;
+sfigure(345);
+clf
+plot(res)
+xlabel('residuals')
+ylabel('shot indx')
+sfigure(456);
+clf
+res_mdl = corr_plot(int_num(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('background counts')
+sfigure(567);
+clf
+corr_plot(atom_num(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('total atom counts')
+sfigure(678);
+clf
+corr_plot(xdata(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('freq - theory (MHz)')
+sfigure(123)
+clf
+corr_plot(int_pd(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('integrated pd voltage')
+sfigure(1234)
+clf
+res_mdl_ratio = corr_plot(int_num(freq_mask)./atom_num(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('atom num ratio')
+

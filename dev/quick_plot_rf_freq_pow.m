@@ -3,7 +3,9 @@
 
 rf_knife_dat= [];
 rf_knife_dat.freq=col_vec([1.85,1.95,2.05,2.55,2.00,2.45,2.15,2.25,nan]);
-rf_knife_dat.res_num=col_vec([824.6,510.2,443,-7,264.6,-55,257,-74,-666]);
+%re analysis
+rf_knife_dat.res_num=col_vec([,521.49,]);
+% rf_knife_dat.res_num=col_vec([824.6,510.2,443,-7,264.6,-55,257,-74,-666]);
 rf_knife_dat.detuned_num=col_vec([548,205,196,-141,168.2,-215,119,77,-312]);
 rf_knife_dat.diff_num=rf_knife_dat.res_num-rf_knife_dat.detuned_num;
 rf_knife_dat.freq(isnan(rf_knife_dat.freq))=4

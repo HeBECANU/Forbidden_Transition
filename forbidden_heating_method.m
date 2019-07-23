@@ -246,10 +246,17 @@ end
 %now find the mean position of each pulse of the atom laser in each shot
 
 anal_opts.atom_laser=[];
-anal_opts.atom_laser.pulsedt=120e-3;
-anal_opts.atom_laser.t0=1.637327; %center i ntime of the first pulse
+% settings for older heating runs
+% anal_opts.atom_laser.pulsedt=120e-3;
+% anal_opts.atom_laser.t0=1.637327; %center i ntime of the first pulse
+% anal_opts.atom_laser.start_pulse=1; %atom laser pulse to start with
+% anal_opts.atom_laser.pulses=189;
+
+anal_opts.atom_laser.pulsedt=120e-3;%240e-3;
+anal_opts.atom_laser.t0=1.6373;%1.7547; %center i ntime of the first pulse
 anal_opts.atom_laser.start_pulse=1; %atom laser pulse to start with
-anal_opts.atom_laser.pulses=189;
+anal_opts.atom_laser.pulses=150;
+
 anal_opts.atom_laser.pulse_twindow=anal_opts.atom_laser.pulsedt*0.9;
 tmp_xlim=[-45,45];    
 tmp_ylim=[-45, 45];
@@ -269,7 +276,7 @@ data.al_pulses=fit_gauss_to_al_pulses(anal_opts.atom_laser,al_mcp_data);
 toc
 
 
-save('20190708_al_fits_done.mat','-v7.3')
+% save('20190708_al_fits_done.mat','-v7.3')
 
 
 
@@ -280,12 +287,67 @@ data.mcp_tdc.all_ok=al_mcp_data.all_ok;
 
 data.signal.heating = forbidden_signal_heating(data,anal_opts.heating_fit);
 %% Generate signal
-data.signal.total_num = signal_process(data,anal_opts);
+% data.signal.total_num = signal_process(data,anal_opts);
 
 
-
+anal_opts.cal_model=[];
+anal_opts.cal_model.smooth_time=60*1;
+anal_opts.cal_model.plot=true;
 % Create a calibration model
-data.cal = make_calibration_model(data,anal_opts);
+data.cal = make_cal_model_heating(anal_opts.cal_model,data);
+
+%%
+signal_bined=[];
+signal_unbinned.msr.val = data.cal.calibrated_signal.val;
+signal_unbinned.msr.freq = data.signal.heating.msr.freq;
+%probe_freq_bins=col_vec(linspace(-80,80,60));
+probe_freq_bins=col_vec(linspace(-5,15,15));
+iimax=numel(probe_freq_bins)-1;
+for ii=1:iimax
+    signal_bined.freq_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
+    bin_mask=signal_unbinned.msr.freq<probe_freq_bins(ii+1) & signal_unbinned.msr.freq>probe_freq_bins(ii);
+    signal_bined.val(ii,:)=nanmean(signal_unbinned.msr.val(bin_mask,:),1);
+    %sum(bin_mask)
+    %std(signal_unbinned.val(bin_mask))
+    signal_bined.unc_val(ii,:)=nanstd(signal_unbinned.msr.val(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+    
+    signal_bined.freq(ii)=nanmean(probe_freq_bins(ii:ii+1));
+    signal_bined.freq_lims_diff(ii,:)=abs(signal_bined.freq_lims(ii,:)-signal_bined.freq(ii));
+end
+
+stfig('Heating method calibrated')
+clf
+
+tot_plots=size(signal_unbinned.msr.val,2);
+signal_idx=1;
+for signal_idx=1:tot_plots
+%     ymultipler=signal_unbinned.ymult(signal_idx);
+%     ylabel_str=signal_unbinned.ystr(signal_idx);
+    subplot(2,tot_plots,0+signal_idx)
+    plot(signal_unbinned.msr.freq,signal_unbinned.msr.val(:,signal_idx).*1e9,'x')
+    xlabel('freq-theory (MHz)')
+    %ylabel('heating rate (nk/s)')
+    ylabel('dif in heating rate (nK/s)')
+%     title(signal_unbinned.names{signal_idx})
+    xlim([min(probe_freq_bins),max(probe_freq_bins)])
+    xl=xlim;
+    subplot(2,tot_plots,tot_plots+signal_idx)
+    errorbarxy(col_vec(signal_bined.freq),signal_bined.val(:,signal_idx).*1e9,...
+        signal_bined.freq_lims_diff,signal_bined.unc_val(:,signal_idx).*1e9);
+    xlim(xl)
+    xlabel('freq-theory (MHz)')
+    ylabel('dif in heating rate (nK/s)')
+%     title(signal_unbinned.names{signal_idx})
+end
+saveas(gca,fullfile(anal_opts.global.out_dir,'signal_fits.png'))
+%% Save to output
+cli_header({0,'Saving output...'})
+out_data.data.cal = data.cal;
+out_data.data.signal = data.signal.heating;
+out_data.data.al_pulses = data.al_pulses;
+out_data.options = anal_opts;
+save(fullfile(anal_opts.global.out_dir,'data_results.mat'),'out_data')
+fwtext('All Done!')
 
 %% Mask out shots which failed
 % data.check = check_for_errors(data,opts);
@@ -339,10 +401,3 @@ data.cal = make_calibration_model(data,anal_opts);
 % 
 % 
 % 
-% % %% Save to output
-% cli_header({0,'Saving output...'})
-% out_data.data = data.cat;
-% out_data.options = opts;
-% filename = fullfile(opts.out_dir,'output_and_options.mat');
-% save(filename,'out_data','-v7.3')
-% fwtext('All Done!')

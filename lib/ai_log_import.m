@@ -142,6 +142,7 @@ ai_log_out.ok.sfp=false(dld_files,1);
 ai_log_out.pd.mean=nan(dld_files,1);
 ai_log_out.pd.std=nan(dld_files,1);
 ai_log_out.pd.median=nan(dld_files,1);
+ai_log_out.pd.integrated=nan(dld_files,1);
 %%%%
 %ai_log_out.phos.max=nan(dld_files,1);
 %ai_log_out.phos.min=nan(dld_files,1);
@@ -193,6 +194,7 @@ for ii=1:iimax
         ai_log_out.pd.mean(idx_nearest_shot)=ai_log_single_out.pd.mean;
         ai_log_out.pd.std(idx_nearest_shot)=ai_log_single_out.pd.std;
         ai_log_out.pd.median(idx_nearest_shot)=ai_log_single_out.pd.median;
+        ai_log_out.pd.integrated(idx_nearest_shot)=ai_log_single_out.pd.integrated;
         %output all the times mainly as a diagnostic
         ai_log_out.times.create_ai_log(idx_nearest_shot,:)=time_posix_ai_log_create_write(:); 
         ai_log_out.times.fname_ai_log(idx_nearest_shot)=time_posix_fname;
@@ -259,6 +261,7 @@ function ai_log_single_out=ai_log_single(args_single)
 % ai_log_single_out.pd.mean
 % ai_log_single_out.pd.std
 % ai_log_single_out.pd.median
+% ai_log_single_out.pd.integrated
 % ai_log_out.ok.sfp
 
 
@@ -274,7 +277,6 @@ sr=ai_dat.sample_rate;
 aquire_time=samples/sr;
 
 ai_dat.time=(0:(samples-1))/sr;%not sure if this is off by 1 sample in time
-
 probe_sampl_start=max(1,ceil(args_single.pd.time_start*sr));
 probe_sampl_stop=min(samples,ceil(args_single.pd.time_stop*sr));
 probe_pd_during_meas=ai_dat.Data(1,probe_sampl_start:probe_sampl_stop);
@@ -284,7 +286,9 @@ probe_pd_during_meas=ai_dat.Data(1,probe_sampl_start:probe_sampl_stop);
 ai_log_single_out.pd.mean=mean(probe_pd_during_meas);
 ai_log_single_out.pd.std=std(probe_pd_during_meas);
 ai_log_single_out.pd.median=median(probe_pd_during_meas);
-
+ai_log_single_out.pd.integrated=trapz(ai_dat.time(probe_sampl_start:probe_sampl_stop),probe_pd_during_meas);
+% 
+% trapz((0:(length(probe_pd_during_meas)-1)).*sr,probe_pd_during_meas);
 
 %% plot the anlog values
 %as this function does not decide if this pd signal has failed it cant decide if it should plot or not
@@ -331,7 +335,7 @@ sm_in.peak_thresh=args_single.sfp.peak_thresh; %theshold on the [uncompressed,co
 sm_in.pzt_dist_sm=args_single.sfp.pzt_dist_sm;%minimum pzt voltage between peaks for the laser to be considered single mode
 sm_in.pzt_peak_width=args_single.sfp.pzt_peak_width; %used to check that peaks are acually different and not just noise
 sm_in.scan_time=20e-3;  %estimate of the sfp scan time,used to set the window and the smoothing
-sm_in.pd_filt_factor=1e-3; %fraction of a scan to smooth the pd data by for peak detection
+sm_in.pd_filt_factor=9e-3; %fraction of a scan to smooth the pd data by for peak detection
 sm_in.ptz_filt_factor_pks=1e-3;  %fraction of a scan to smooth the pzt data by for peak detection
 sm_in.pzt_filt_factor_deriv=1e-3; %fraction of a scan to smooth the data by for derivative detection
 sm_in.pd_amp_min=1; %minimum range of the pd signal to indicate the laser has sufficient power
