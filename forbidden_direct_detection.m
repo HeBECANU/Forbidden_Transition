@@ -34,12 +34,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
 % anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190713_forbidden427_direct_det_narrow\';
-%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol
-%Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190710_forbidden427_direct_det_narrow_dither_on
-%Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det
-
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190721_weekend_run\'
-% anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol_half_pow\'
+anal_opts.tdc_import.dir='Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190711_forbidden427_direct_det_bad_atom_num\'
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -278,22 +273,29 @@ end
 
 %% creation of the signal
 
-data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>10e3;
+data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>2.5e3;
 data.signal.raw=[];
-data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts);% %./data.mcp_tdc.num_counts
+offset = 0;
+data.signal.raw.val=col_vec((data.mcp_tdc.masked.num_counts-offset)./data.mcp_tdc.num_counts);% %./data.mcp_tdc.num_counts
+% data.signal.raw.val=col_vec(-data.mcp_tdc.masked.num_counts+data.mcp_tdc.num_counts.*0.1602-6.786e3);
+% data.signal.raw.val=col_vec(data.mcp_tdc.num_counts.*0.1602-6.786e3);
 %data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts./data.mcp_tdc.masked.tot_num_counts);% %./data.mcp_tdc.num_counts
 %-1/6.3508.*(data.mcp_tdc.masked.tot_num_counts-1.190409565626061e+05)
-data.signal.raw.unc=sqrt(data.signal.raw.val);
+% data.signal.raw.unc=sqrt(data.signal.raw.val);
+data.signal.raw.unc=ones(size(data.signal.raw.val)).*1e-10;
+
+%estimate total incident energy from integrated pd voltage
+data.incident_power = data.ai_log.pd.integrated.*3.2616e-5;
 
 anal_opts.cal_model=[];
-anal_opts.cal_model.smooth_time=60*1;
+anal_opts.cal_model.smooth_time=300;
 anal_opts.cal_model.plot=true;
 
 out_calibration=make_cal_model_signal(anal_opts.cal_model,data);
 data.signal.cal=out_calibration;
 
 
-%% bin data points and fit
+% bin data points and fit
 
 predicted_freq=700939267; %MHz
 
@@ -341,7 +343,7 @@ signal_unbinned.val=signal_unbinned.val(is_not_oulier);
 signal_unbinned.freq=signal_unbinned.freq(is_not_oulier);
 
 signal_unbinned.names={'RF knife method'};
- signal_unbinned.ystr={'\Delta counts'};
+ signal_unbinned.ystr={'signal (J^{-1})'};
 signal_unbinned.ymult=[1];
 
 
@@ -403,8 +405,8 @@ end
 stfig('counts vs probe freq normalised');
 clf
 
-gauss_fun1d = @(b,x) b(1).*exp(-((x-b(2)).^2)./(2*b(3).^2))+b(4); 
-coeff_names={'amp','mu','sig','offset'};
+gauss_fun1d = @(b,x) b(1).*exp(-((x-b(2)).^2)./(2*b(3).^2)); 
+coeff_names={'amp','mu','sig'};
 
 tot_plots=size(signal_unbinned.val,2);
 signal_idx=1;
@@ -428,7 +430,7 @@ for signal_idx=1:tot_plots
     xdata=col_vec(signal_bined.freq_mean);
     ydata=signal_bined.val(:,signal_idx);
     yunc=signal_bined.unc_val(:,signal_idx);
-    
+    %mean(ydata-predict(fitobject,xdata))
     subplot(2,tot_plots,tot_plots+signal_idx)
     %plot(col_vec(signal_bined.freq_bin_cen),ydata*ymultipler,'x')
     plot(xdata,ydata*ymultipler,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
@@ -454,15 +456,15 @@ for signal_idx=1:tot_plots
     
     amp_guess=max(ydata);
     ydata_shifted =ydata-min(ydata);
-    mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
+    mu_guess=-7.8;%wmean(xdata,ydata_shifted); %compute the weighted mean
     %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
-    sig_guess=10;
+    sig_guess=5;
     fo = statset('TolFun',10^-6,...
         'TolX',1e-4,...
         'MaxIter',1e4,...
         'UseParallel',1);
     % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
-    inital_guess=[amp_guess,mu_guess,sig_guess,0];
+    inital_guess=[amp_guess,mu_guess,sig_guess];
     fitobject=fitnlm(xdata,ydata,...
         gauss_fun1d,...
          inital_guess,...
@@ -507,10 +509,13 @@ out_data.probe_num = data.mcp_tdc.masked.num_counts;
 out_data.time = data.mcp_tdc.time_create_write(:,2);
 out_data.is_shot_good = is_shot_good;
 
+out_data.opts = anal_opts;
+
 save(fullfile(anal_opts.global.out_dir,'data_results.mat'),'out_data')
 
 %% residuals
 freq_window = [3.5,7];
+freq_window = [-60,60];
         
 not_empty_shots=~cellfun(@isempty,data.mcp_tdc.masked.counts_txy);
 freq_mask=signal_unbinned.freq<=freq_window(2) & signal_unbinned.freq>freq_window(1);
@@ -530,7 +535,7 @@ xlabel('residuals')
 ylabel('shot indx')
 sfigure(456);
 clf
-res_mdl = corr_plot(int_num,res,ones(size(res)))
+corr_plot(int_num,res,ones(size(res)))
 ylabel('res')
 xlabel('background counts')
 sfigure(567);
@@ -548,44 +553,46 @@ clf
 corr_plot(int_pd(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
 ylabel('res')
 xlabel('average pd voltage')
-
+sfigure(4321)
+clf
+res_mdl =  corr_plot(int_num(freq_mask)./atom_num(freq_mask),res(freq_mask),ones(size(res(freq_mask))))
+ylabel('res')
+xlabel('atom num ratio')
 %%
-if false
+if true
 stfig('residual correlations removed');
 clf
-subplot(2,1,1)
 xdata = signal_unbinned.freq;
-ydata = signal_unbinned.val - predict(res_mdl,int_num');
-scatter(xdata,ydata,'x')
-amp_guess=max(ydata);
-ydata_shifted =ydata-min(ydata);
-mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
-%sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
-sig_guess=10;
-fo = statset('TolFun',10^-6,...
-    'TolX',1e-4,...
-    'MaxIter',1e4,...
-    'UseParallel',1);
-% 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
-inital_guess=[amp_guess,mu_guess,sig_guess,0];
-fitobject_adj=fitnlm(xdata,ydata,...
-    gauss_fun1d,...
-     inital_guess,...
-    'CoefficientNames',coeff_names,'Options',fo);
-fit_coeff=fitobject_adj.Coefficients.Estimate;
-fit_se=fitobject_adj.Coefficients.SE;
+ydata = signal_unbinned.val - predict(res_mdl,int_num'./atom_num');
+% amp_guess=max(ydata);
+% ydata_shifted =ydata-min(ydata);
+% mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
+% %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
+% sig_guess=10;
+% fo = statset('TolFun',10^-6,...
+%     'TolX',1e-4,...
+%     'MaxIter',1e4,...
+%     'UseParallel',1);
+% % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
+% inital_guess=[amp_guess,mu_guess,sig_guess,0];
+% fitobject_adj=fitnlm(xdata,ydata,...
+%     gauss_fun1d,...
+%      inital_guess,...
+%     'CoefficientNames',coeff_names,'Options',fo);
+% fit_coeff=fitobject_adj.Coefficients.Estimate;
+% fit_se=fitobject_adj.Coefficients.SE;
 x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
-[ysamp_val,ysamp_ci]=predict(fitobject_adj,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+[ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
 hold on
 plot(x_sample_fit,ysamp_val*ymultipler,'r')
 drawnow
 yl=ylim;
 plot(x_sample_fit,ysamp_ci*ymultipler,'color',[1,1,1].*0.5)
 ylim(yl)
-amp_str=string_value_with_unc(fitobject_adj.Coefficients.Estimate(1),fitobject_adj.Coefficients.SE(1),'b');
-cen_str=string_value_with_unc(fitobject_adj.Coefficients.Estimate(2),fitobject_adj.Coefficients.SE(2),'b');
-width_str=string_value_with_unc(abs(fitobject_adj.Coefficients.Estimate(3)),fitobject_adj.Coefficients.SE(3),'b');
-offset_str=string_value_with_unc(abs(fitobject_adj.Coefficients.Estimate(3)),fitobject_adj.Coefficients.SE(3),'b');
+amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1),fitobject_adj.Coefficients.SE(1),'b');
+cen_str=string_value_with_unc(fitobject.Coefficients.Estimate(2),fitobject_adj.Coefficients.SE(2),'b');
+width_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject_adj.Coefficients.SE(3),'b');
+offset_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject_adj.Coefficients.SE(3),'b');
 width_units='MHz';
 offset_units='counts';
 amp_units='counts';
@@ -593,10 +600,9 @@ str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   
     cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
 text(0.01,0.9,str,'Units','normalized');
 
-subplot(2,1,2)
-xtemp=col_vec(signal_bined.freq_mean);
-ytemp=signal_bined.val(:,signal_idx);
-plot(xtemp,ytemp*ymultipler,'x','MarkerSize',5)
+% xtemp=col_vec(signal_bined.freq_mean);
+% ytemp=signal_bined.val(:,signal_idx);
+% plot(xtemp,ytemp*ymultipler,'x','MarkerSize',5)
 hold on
 for ii=1:iimax
     signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
@@ -627,11 +633,13 @@ yunc=signal_bined.unc_val(:,signal_idx);
 
 %plot(col_vec(signal_bined.freq_bin_cen),ydata*ymultipler,'x')
 plot(xdata,ydata*ymultipler,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
-errorbar(xdata,ydata*ymultipler,...
-    signal_bined.unc_val(:,signal_idx)*ymultipler,signal_bined.unc_val(:,signal_idx)*ymultipler,...
-    signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
-    'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
-    'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+% errorbar(xdata,ydata*ymultipler,...
+%     signal_bined.unc_val(:,signal_idx)*ymultipler,signal_bined.unc_val(:,signal_idx)*ymultipler,...
+%     signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
+%     'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+%     'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+%ylim([min(ydata),max(ydata)])
+%xlim([min(xdata),max(xdata)])
 end
 %% structure in the noise
 anal_opts.plot2d.do=false;

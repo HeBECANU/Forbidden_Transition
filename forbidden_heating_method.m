@@ -24,7 +24,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190714_forbidden427_heating_method_pol_circ1';
+anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden427_overnight_heating_method';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -81,41 +81,42 @@ data=match_labview_log(data,anal_opts)
 
 
 %% Import the analog log files
-%TODO
-% modify to return the integrated pd signal
 
+use_ai = 1;
+if use_ai
+anal_opts.ai_log.dir=anal_opts.tdc_import.dir;
+anal_opts.ai_log.force_reimport=false;
+anal_opts.ai_log.force_load_save=false;
+anal_opts.ai_log.log_name='log_analog_in_';
+%because im only passing the ai_log feild to aviod conflicts forcing a reimport i need to coppy these feilds
+anal_opts.ai_log.calibration=data.mcp_tdc.probe.calibration;
+anal_opts.ai_log.pd.set_probe=1.1;%anal_opts.probe_set_pt;
+anal_opts.ai_log.trig_dld=anal_opts.trig_dld;
+anal_opts.ai_log.dld_aquire=anal_opts.dld_aquire;
+anal_opts.ai_log.aquire_time=anal_opts.dld_aquire;
+anal_opts.ai_log.trig_ai_in=3.0;%anal_opts.trig_ai_in;
+% set time matching conditions
+anal_opts.ai_log.aquire_time=21;
+anal_opts.ai_log.pd.diff_thresh=0.5;
+anal_opts.ai_log.pd.std_thresh=0.5;
+anal_opts.ai_log.pd.time_start=0.0;
+anal_opts.ai_log.pd.time_stop=21;
+anal_opts.ai_log.time_match_valid=16; %how close the predicted start of the shot is to the actual
+%sfp options
+anal_opts.ai_log.scan_time=1.1; %fast setting 1/100hz %estimate of the sfp scan time,used to set the window and the smoothing
+anal_opts.ai_log.sfp.num_checks=inf; %how many places to check that the laser is single mode, inf=all scans
+anal_opts.ai_log.sfp.peak_thresh=[0,0];%[0,-0.008]*1e-3; %theshold on the compressed signal to be considered a peak
+anal_opts.ai_log.sfp.pzt_dist_sm=4.5;%minimum (min peak difference)between peaks for the laser to be considered single mode
+anal_opts.ai_log.sfp.pzt_peak_width=0.5; %peak with in pzt voltage used to check that peaks are acually different and not just noise
+anal_opts.ai_log.plot.all=0;
+anal_opts.ai_log.plot.failed=0;
 
-% anal_opts.ai_log.dir=anal_opts.tdc_import.dir;
-% anal_opts.ai_log.force_reimport=false;
-% anal_opts.ai_log.force_load_save=false;
-% anal_opts.ai_log.log_name='log_analog_in_';
-% %because im only passing the ai_log feild to aviod conflicts forcing a reimport i need to coppy these feilds
-% anal_opts.ai_log.calibration=data.mcp_tdc.probe.calibration;
-% anal_opts.ai_log.pd.set_probe=anal_opts.probe_set_pt;
-% anal_opts.ai_log.trig_dld=anal_opts.trig_dld;
-% anal_opts.ai_log.dld_aquire=anal_opts.dld_aquire;
-% anal_opts.ai_log.aquire_time=anal_opts.dld_aquire;
-% anal_opts.ai_log.trig_ai_in=anal_opts.trig_ai_in;
-% % set time matching conditions
-% anal_opts.ai_log.aquire_time=4;
-% anal_opts.ai_log.pd.diff_thresh=0.05;
-% anal_opts.ai_log.pd.std_thresh=0.05;
-% anal_opts.ai_log.pd.time_start=0.2;
-% anal_opts.ai_log.pd.time_stop=2;
-% anal_opts.ai_log.time_match_valid=8; %how close the predicted start of the shot is to the actual
-% %sfp options
-% anal_opts.ai_log.scan_time=1/20; %fast setting 1/100hz %estimate of the sfp scan time,used to set the window and the smoothing
-% anal_opts.ai_log.sfp.num_checks=inf; %how many places to check that the laser is single mode, inf=all scans
-% anal_opts.ai_log.sfp.peak_thresh=[-0.005,-0.005];%[0,-0.008]*1e-3; %theshold on the compressed signal to be considered a peak
-% anal_opts.ai_log.sfp.pzt_dist_sm=4.5;%minimum (min peak difference)between peaks for the laser to be considered single mode
-% anal_opts.ai_log.sfp.pzt_peak_width=0.15; %peak with in pzt voltage used to check that peaks are acually different and not just noise
-% anal_opts.ai_log.plot.all=false;
-% anal_opts.ai_log.plot.failed=true;
-% 
-% %do the ac waveform fit
-% anal_opts.ai_log.do_ac_mains_fit=false;
-% 
-% data.ai_log=ai_log_import(anal_opts.ai_log,data);
+%do the ac waveform fit
+anal_opts.ai_log.do_ac_mains_fit=false;
+
+data.ai_log=ai_log_import(anal_opts.ai_log,data);
+%data.ai_log.pd.mean gives the average pd value
+end
 %%
 
 anal_opts.wm_log.dir=anal_opts.tdc_import.dir;
@@ -252,10 +253,10 @@ anal_opts.atom_laser=[];
 % anal_opts.atom_laser.start_pulse=1; %atom laser pulse to start with
 % anal_opts.atom_laser.pulses=189;
 
-anal_opts.atom_laser.pulsedt=120e-3;%240e-3;
-anal_opts.atom_laser.t0=1.6373;%1.7547; %center i ntime of the first pulse
+anal_opts.atom_laser.pulsedt=240e-3;%120e-3;%
+anal_opts.atom_laser.t0=1.71056; %1.6373;%center i ntime of the first pulse
 anal_opts.atom_laser.start_pulse=1; %atom laser pulse to start with
-anal_opts.atom_laser.pulses=150;
+anal_opts.atom_laser.pulses=95;
 
 anal_opts.atom_laser.pulse_twindow=anal_opts.atom_laser.pulsedt*0.9;
 tmp_xlim=[-45,45];    
@@ -345,6 +346,10 @@ cli_header({0,'Saving output...'})
 out_data.data.cal = data.cal;
 out_data.data.signal = data.signal.heating;
 out_data.data.al_pulses = data.al_pulses;
+out_data.data.num = data.mcp_tdc.num_counts;
+out_data.data.all_ok = data.mcp_tdc.all_ok;
+out_data.data.masked_num = data.mcp_tdc.masked.num_counts;
+out_data.data.ai_log = data.ai_log;
 out_data.options = anal_opts;
 save(fullfile(anal_opts.global.out_dir,'data_results.mat'),'out_data')
 fwtext('All Done!')
