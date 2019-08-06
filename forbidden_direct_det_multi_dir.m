@@ -148,11 +148,11 @@ end
 %% create drift model
 data.is_shot_good = logical(data.is_shot_good);
 % offset = interp1(wm_offset(:,1),wm_offset(:,2),data.time);%,'spline');
-offset = 2.*interp1(wm_offset(:,1),wm_offset(:,2),data.time,'spline');%spline
-offset_run = 2.*interp1(wm_offset(:,1),wm_offset(:,2),run_time,'splie');% 'makima'pchip 'spline' 'nearest'
+offset = 2.*interp1(wm_offset(:,1),wm_offset(:,2),data.time,'pchip');%spline
+offset_run = 2.*interp1(wm_offset(:,1),wm_offset(:,2),run_time,'pchip');% 'makima'pchip 'spline' 'nearest'
 % offset_run = smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),run_time,'spline'),'sgolay',1);%
 t_temp = linspace(min(wm_offset(:,1)),max(wm_offset(:,1)),1000);
-offset_mdl =  2.*interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'spline');% 'makima' pchip 'spline' 'nearest'
+offset_mdl =  2.*interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'pchip');% 'makima' pchip 'spline' 'nearest'
 % offset_mdl =  smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'spline'),'sgolay',300);%
 %plot drift model
 stfig('wm drift model')
@@ -172,7 +172,7 @@ ylabel('corrected cen')
 cen_spread_offset = std(cen-offset_run)
 cen_spread = std(cen)
 %% set up shifts
-Zeeman_shift = -1.7154;
+Zeeman_shift = 0;%-1.7154;
 shifts = Zeeman_shift;
 %%
 %set up the colors to use
@@ -180,6 +180,10 @@ colors_main=[[233,87,0];[33,188,44];[0,165,166]];
 %colors_main = [[75,151,201];[193,114,66];[87,157,95]];
 font_name='cmr10';
 font_size_global=14;
+
+% bin data points and fit
+
+predicted_freq=700939267; %MHz
 
 colors_main=colors_main./255;
 lch=colorspace('RGB->LCH',colors_main(:,:));
@@ -218,7 +222,7 @@ probe_freq_bins = linspace(min(xdata),max(xdata),num_bins);
 
 stfig('combined data')
 clf
-ylabel_str='\Delta Scattered ratio / integrated power (kJ^{-1})';
+ylabel_str='\(\Delta\) Scattered ratio / integrated power (kJ\(^{-1}\))';
 
 
     
@@ -244,19 +248,7 @@ ylabel_str='\Delta Scattered ratio / integrated power (kJ^{-1})';
         'CoefficientNames',coeff_names,'Options',fo);
     fit_coeff=fitobject.Coefficients.Estimate;
     fit_se=fitobject.Coefficients.SE;
-    x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
-    [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
-    hold on
-    plot(x_sample_fit,ysamp_val,'r')
-    drawnow
-    yl=ylim;
-    plot(x_sample_fit,ysamp_ci,'color',[1,1,1].*0.5)
-    ylim(yl)
-    xlim([min(xdata),max(xdata)])
-    xlabel('freq-theory (MHz)')
-    ylabel(ylabel_str)
-    % show the inital guess
-    %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
+    cen_val =fit_coeff(2);
     fitobject
     
 %     amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1),fitobject.Coefficients.SE(1),'b');
@@ -273,7 +265,7 @@ ylabel_str='\Delta Scattered ratio / integrated power (kJ^{-1})';
     amp_units='counts';
     str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   Offset %s %s',...
         cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
-    text(0.01,0.9,str,'Units','normalized'); 
+%     text(0.01,0.9,str,'Units','normalized'); 
     %wide on edges many on peak
     probe_freq_bins =[linspace(min(xdata),fitobject.Coefficients.Estimate(2)-8,8),...
         linspace(fitobject.Coefficients.Estimate(2)-6,fitobject.Coefficients.Estimate(2)+6,8),...
@@ -303,15 +295,32 @@ for ii=1:iimax
         signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
      end
 end
-plot(signal_bined.freq_mean,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
-    errorbar(signal_bined.freq_mean,signal_bined.val,...
+    errorbar(signal_bined.freq_mean-cen_val,signal_bined.val,...
         signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
          signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
         'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
          'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+hold on    
+plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
+    
+x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
+    [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+    hold on
+    plot(x_sample_fit-cen_val,ysamp_val,'r')
+    drawnow
+    yl=ylim;
+    plot(x_sample_fit-cen_val,ysamp_ci,'color',[1,1,1].*0.5)
+    ylim(yl)
+    xlim([min(xdata),max(xdata)]-cen_val)
+    xlabel('\(f-f_0\) (MHz)','fontsize',14,'interpreter','latex')
+    ylabel(ylabel_str,'fontsize',14,'interpreter','latex')
+    % show the inital guess
+    %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
      box on
     fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
-   %%
+   set(gca,'fontsize',14)
+   xlim([-36.5,36.5])
+    %%
     stfig('All data')
     plot(xdata,ydata,'x')
     hold on

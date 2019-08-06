@@ -123,7 +123,7 @@ elseif num_fit_param==2
     signal_unbinned.msr.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good,2),thermal_fit.fit_coeff.Estimate(is_freq_good,1),mean_first_few(is_freq_good,1));
     signal_unbinned.names={'fit grad','fit inital term','mean of temp for first few'};
     signal_unbinned.ystr={'heating rate (nk/s)','temp. (uk)','temp. (uk)'};
-    signal_unbinned.ymult=[1e9,1e9,1e7,1e7];
+    signal_unbinned.ymult=[1e9,1e7,1e7];
     signal_unbinned.msr.freq=probe_freq(is_freq_good);
     signal_unbinned.cal.val=cat(2,thermal_fit.fit_coeff.Estimate(is_freq_good_cal,2),thermal_fit.fit_coeff.Estimate(is_freq_good_cal,1),mean_first_few(is_freq_good_cal,1));
     signal_unbinned.cal.freq=probe_freq(is_freq_good_cal);
