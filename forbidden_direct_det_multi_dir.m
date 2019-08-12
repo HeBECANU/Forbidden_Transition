@@ -1,5 +1,5 @@
 % anal_opts.tdc_import.dir=;
-
+clear all
 
 
 
@@ -57,6 +57,9 @@ data_dirs = {'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190713_forbidden427
     'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden_Rf_2.05\'
     'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_forbidden_427_narrow_scan_missed\'
     %%
+    %'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190719_forbidden_Rf_none\'
+    %'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190715_forbidden427_narrow_changed_pol_half_pow\'
+    %%
     %'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190711_forbidden427_direct_det_bad_atom_num\'
     %'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190704_forbidden_long interrogation\'
     };
@@ -78,6 +81,8 @@ cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5,0];
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5];
 % cen = [5.4,2.3,6.56,4.2,6.0,4.5]; %dither removed
 cen_unc = [0.2,0.2,0.2,0.12,0.2,0.3,0.13];
+% cen = [1];
+% cen_unc = [0.1];
 for loop_idx=1:length(data_dirs)
     current_dir = data_dirs{loop_idx};
     fprintf('importing data from \n %s \n',current_dir)
@@ -171,9 +176,10 @@ xlabel('time')
 ylabel('corrected cen')
 cen_spread_offset = std(cen-offset_run)
 cen_spread = std(cen)
-%% set up shifts
-Zeeman_shift = 0;%-1.7154;
-shifts = Zeeman_shift;
+%% set up ac stark shifts
+Zeeman_shift = 0;%-1.7154;%3.16329586028859e-01,
+ac_shift = 0;%2.95062819924799e-01.*data.integrated_pd(data.is_shot_good);
+shifts = ac_shift;
 %%
 %set up the colors to use
 colors_main=[[233,87,0];[33,188,44];[0,165,166]];
@@ -233,8 +239,8 @@ ylabel_str='\(\Delta\) Scattered ratio / integrated power (kJ\(^{-1}\))';
     sig_guess=10;
     offset_guess = 0;
     amp_guess=4.556661697251370e+01;
-    mu_guess=9.252322284901341e+00;
-    sig_guess=-2.866375907039084e+00;
+    mu_guess=1;
+    sig_guess=2.866375907039084e+00;
     offset_guess=-3.340314780403577e-01;
     fo = statset('TolFun',10^-6,...
         'TolX',1e-4,...
