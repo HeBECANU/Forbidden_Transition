@@ -41,18 +41,25 @@ det_radius=70e-3/2;
 
 %% try to simulate a 2 photon decay
 %absorbtion photon
-k_photon1=zeros(num_scattered,3);
-k_photon1(:,1)=recoil_vel1; % displace in the x dirn
-k_photon2= randn(num_scattered,3); % random direction
-k_photon2=k_photon2./repmat(vecnorm(k_photon2,2,2),1,3); 
-k_photon2=k_photon2.*recoil_vel2;
-k_photon3= randn(num_scattered,3); % random direction
-k_photon3=k_photon3./repmat(vecnorm(k_photon3,2,2),1,3); 
-k_photon3=k_photon3.*recoil_vel3;
+
+num_photons=3;
+% photon index,atom index, cartesian index 
+k_photons=zeros(num_photons,num_scattered,3);
+
+k_photons(1,:,1)=recoil_vel1; % displace in the x dirn for the first photon
+% for the decay photons pick a random direction by generating a norm dist random number in each cartesian axis
+rand_dir= randn(num_scattered,3); % random direction
+% normalize each to be on the unit sphere
+rand_dir=rand_dir./repmat(vecnorm(rand_dir,2,2),1,3); 
+% then multiply by the recoil velocity
+k_photons(2,:,:)=rand_dir.*recoil_vel2;
+% repeat for the 2nd emitted photon
+rand_dir= randn(num_scattered,3);
+rand_dir=rand_dir./repmat(vecnorm(rand_dir,2,2),1,3); 
+k_photons(3,:,:)=rand_dir.*recoil_vel3;
 
 % sum up the k space
-k_scattered=sum(cat(3,k_photon1,k_photon2,k_photon3),3);
-
+k_scattered=squeeze(sum(k_photons,1));
 
 
 %% find the distribution of the k space radi
@@ -60,6 +67,16 @@ dist_from_origin=vecnorm(k_scattered,2,2);
 
 
 if in_opts.do_plots
+    
+    %find the mean kenetic energy
+    fprintf('mean kinetic energy                %e J , %e * mass of He \n',mean((1/2)*(dist_from_origin.^2)).*[const.mhe,1])
+    fprintf('kinetic energy of one 427nm photon %e J , %e * mass of He \n',mean((1/2)*(recoil_vel1.^2)).*[const.mhe,1])
+    fprintf('ratio %e \n',mean((dist_from_origin.^2))/(recoil_vel1.^2))
+    fprintf('ratio from sum of ke %f \n',mean((dist_from_origin.^2))/(((recoil_vel1^2)+(recoil_vel2^2)+(recoil_vel3^2)))) 
+
+    
+    %%
+    
     out=smooth_hist(dist_from_origin,'sigma',1e-4,'lims',[0,sum([recoil_vel1,recoil_vel2,recoil_vel3])]);
     %% plot the k_space
     stfig('k space dist. inital');
