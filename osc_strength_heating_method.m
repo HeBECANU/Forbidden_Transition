@@ -12,6 +12,21 @@ wy=2*pi*420;
 wz=2*pi*40;
 predicted_freq=700939267; %MHz
 
+%set up the colors to use
+colors_main=[[233,87,0];[33,188,44];[0,165,166]];
+%colors_main = [[75,151,201];[193,114,66];[87,157,95]];
+font_name='cmr10';
+font_size_global=14;
+
+colors_main=colors_main./255;
+lch=colorspace('RGB->LCH',colors_main(:,:));
+lch(:,1)=lch(:,1)+20;
+colors_detail=colorspace('LCH->RGB',lch);
+%would prefer to use srgb_2_Jab here
+color_shaded=colorspace('RGB->LCH',colors_main(3,:));
+color_shaded(1)=125;
+color_shaded=colorspace('LCH->RGB',color_shaded);
+
 
 %import heating data
 load('Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden427_overnight_heating_method\out\20190718T110943\data_results.mat')
@@ -65,7 +80,7 @@ hold on
 % plot(x_sample_fit,ysamp_val,'r')
 % drawnow
 % yl=ylim;
-plot(x_sample_fit,ysamp_ci,'color',[1,1,1].*0.5)
+% plot(x_sample_fit,ysamp_ci,'color',[1,1,1].*0.5)
 [ysamp_val,ysamp_ci]=predict(fitobject_l,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
 plot(x_sample_fit,ysamp_val,'b')
 plot(x_sample_fit,ysamp_ci,'color',[1,1,1].*0.2)
@@ -77,3 +92,62 @@ nanmean(Ry.*Rz)*9.48*10^(-9)*sqrt(pi)*fit_coeff(1)*sqrt(2)*fit_coeff(2)*10^6*1/E
 nanmean(Ry.*Rz)*9.48*10^(-9)*pi*fit_coeff_l(1)/fit_coeff_l(2)*10^6*1/Ep;
 nanmean(Ry.*Rz)*3.576*10^(-8)*pi*fit_coeff_l(1)/fit_coeff_l(2)*10^6*1/Ep;
 Int_1 = (predicted_freq+fit_coeff_l(3))*1e6.*pi*fit_coeff_l(1)/fit_coeff_l(2)
+%%
+stfig('heating data')
+clf
+cen_val = fit_coeff_l(3);
+ylabel_str='Change in heating rate (nK/s)';
+xdata = f;
+ydata= dT_dt.*1e9;
+    probe_freq_bins =[linspace(min(xdata),max(xdata),8)];
+    iimax=numel(probe_freq_bins)-1;
+signal_bined.freq_std=nan(iimax,1);
+signal_bined.val=nan(iimax,1);
+signal_bined.unc_val=nan(iimax,1);
+signal_bined.freq_mean=nan(iimax,1);
+signal_bined.freq_obs_min_max_mean_diff=nan(iimax,2);
+for ii=1:iimax
+    signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
+    bin_mask=xdata<=probe_freq_bins(ii+1) & xdata>probe_freq_bins(ii);
+     signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
+    if sum(bin_mask)==0
+        warning('no elements')
+        signal_bined.num_bin(ii)=0;
+    else
+        signal_bined.num_bin(ii)=sum(bin_mask);
+        signal_bined.val(ii,:)=nanmean(ydata(bin_mask,:),1);
+        signal_bined.unc_val(ii,:)=nanstd(ydata(bin_mask,:),[],1)./sqrt(sum(bin_mask));
+        signal_bined.freq_mean(ii)=nanmean(xdata(bin_mask));
+        signal_bined.freq_std(ii)=nanstd(xdata(bin_mask));
+        signal_bined.freq_obs_min_max(ii,:)=[min(xdata(bin_mask)),max(xdata(bin_mask))];
+        signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
+        signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
+     end
+end
+hold on
+    errorbar(signal_bined.freq_mean-cen_val,signal_bined.val,...
+        signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
+         signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
+        'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+         'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
+hold on    
+plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
+    
+x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
+    [ysamp_val,ysamp_ci]=predict(fitobject_l,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+    hold on
+    plot(x_sample_fit-cen_val,ysamp_val.*1e9,'r')
+    drawnow
+    yl=ylim;
+    plot(x_sample_fit-cen_val,ysamp_ci.*1e9,'color',[1,1,1].*0.5)
+    ylim(yl)
+    xlim([min(xdata),max(xdata)]-cen_val)
+    xlabel('\(f-f_0\) (MHz)','fontsize',14,'interpreter','latex')
+    ylabel(ylabel_str,'fontsize',14,'interpreter','latex')
+    % show the inital guess
+    %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
+     box on
+    fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
+   set(gca,'fontsize',14)
+   xlim([-36.5,36.5])

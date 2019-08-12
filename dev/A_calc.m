@@ -37,6 +37,6 @@ first_integral;
 second_integral;
 
 %% Print out final value
-A=alpha/Ep*int_1/int_2;
+A=alpha/E_p*int_1/int_2;
 fprintf('A_{ul} = %s\n',A)
        
