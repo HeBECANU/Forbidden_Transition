@@ -3,7 +3,7 @@
 lambda_706 = 706.53e-9;
 lambda_1083 = 1083.3e-9;
 
-E_427 = 1/(2*mhe)*(h*predicted_freq*1e6/c)^2;
+E_427 = 1/(2*mhe)*(h*v0/c)^2;
 E_706 = 1/(2*mhe)*(h/lambda_706)^2;
 E_1083 = 1/(2*mhe)*(h/lambda_1083)^2;
 
