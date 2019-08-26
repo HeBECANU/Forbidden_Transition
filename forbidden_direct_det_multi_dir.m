@@ -52,9 +52,9 @@ wm_offset = [1.563278643754e9,-0.71111273765563965,0.001339
 data_dirs = {'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190713_forbidden427_direct_det_narrow\'
     'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det_narrow_dither_on\'
     'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det\'
-    'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden_Rf_2.00\'
-    'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190721_weekend_run\'
-    'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden_Rf_2.05\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden_Rf_2.00\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190721_weekend_run\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden_Rf_2.05\'
     'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_forbidden_427_narrow_scan_missed\'
     %%
     %'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190719_forbidden_Rf_none\'
@@ -185,7 +185,7 @@ shifts = ac_shift;
 colors_main=[[233,87,0];[33,188,44];[0,165,166]];
 %colors_main = [[75,151,201];[193,114,66];[87,157,95]];
 font_name='cmr10';
-font_size_global=14;
+font_size_global=17;
 
 % bin data points and fit
 
@@ -228,7 +228,7 @@ probe_freq_bins = linspace(min(xdata),max(xdata),num_bins);
 
 stfig('combined data')
 clf
-ylabel_str='\(\Delta\) Scattered ratio / integrated power (kJ\(^{-1}\))';
+ylabel_str='Normalised scattered fraction (arb. units)';
 
 
     
@@ -318,13 +318,13 @@ x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
     plot(x_sample_fit-cen_val,ysamp_ci,'color',[1,1,1].*0.5)
     ylim(yl)
     xlim([min(xdata),max(xdata)]-cen_val)
-    xlabel('\(f-f_0\) (MHz)','fontsize',14,'interpreter','latex')
-    ylabel(ylabel_str,'fontsize',14,'interpreter','latex')
+    xlabel('\(f-f_0\) (MHz)','fontsize',font_size_global,'interpreter','latex')
+    ylabel(ylabel_str,'fontsize',font_size_global,'interpreter','latex')
     % show the inital guess
     %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
      box on
     fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
-   set(gca,'fontsize',14)
+   set(gca,'fontsize',font_size_global)
    xlim([-36.5,36.5])
     %%
     stfig('All data')
