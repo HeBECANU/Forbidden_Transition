@@ -12,11 +12,10 @@ wy=2*pi*420;
 wz=2*pi*40;
 predicted_freq=700939267; %MHz
 
-%set up the colors to use
-colors_main=[[233,87,0];[33,188,44];[0,165,166]];
+colors_main=[[88,113,219];[60,220,180]./1.75;[88,113,219]./1.7]; %[88,113,219]%[96,144,201]
 %colors_main = [[75,151,201];[193,114,66];[87,157,95]];
 font_name='cmr10';
-font_size_global=14;
+font_size_global=20;
 
 colors_main=colors_main./255;
 lch=colorspace('RGB->LCH',colors_main(:,:));
@@ -29,7 +28,7 @@ color_shaded=colorspace('LCH->RGB',color_shaded);
 
 
 %import heating data
-load('Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden427_overnight_heating_method\out\20190718T110943\data_results.mat')
+load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190718T110943\data_results.mat')
 Ti = out_data.data.signal.msr.val(:,2);
 Tf = out_data.data.signal.msr.val(:,3);
 T=(Ti+Tf)./2;
@@ -126,28 +125,52 @@ for ii=1:iimax
      end
 end
 hold on
-    errorbar(signal_bined.freq_mean-cen_val,signal_bined.val,...
-        signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
-         signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
-        'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
-         'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
-hold on    
-plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
-    
+      
 x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
     [ysamp_val,ysamp_ci]=predict(fitobject_l,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+    curve1 = (ysamp_ci(:,1).*1e9)';
+curve2 = (ysamp_ci(:,2).*1e9)';
+x1 = (x_sample_fit-cen_val)';
+x2 = [x1, fliplr(x1)];
+inBetween = [curve1, fliplr(curve2)];
+h = fill(x2, inBetween, 'g');
+h.FaceColor = [0.31 0.31 0.32].*2.5;
+h.FaceAlpha = 0.5;
     hold on
-    plot(x_sample_fit-cen_val,ysamp_val.*1e9,'r')
-    drawnow
+    plot(x_sample_fit-cen_val,ysamp_val.*1e9,'k','LineWidth',1.5)
+    %drawnow
     yl=ylim;
     plot(x_sample_fit-cen_val,ysamp_ci.*1e9,'color',[1,1,1].*0.5)
-    ylim(yl)
+    ylim([0,2.8])
     xlim([min(xdata),max(xdata)]-cen_val)
-    xlabel('\(f-f_0\) (MHz)','fontsize',14,'interpreter','latex')
-    ylabel(ylabel_str,'fontsize',14,'interpreter','latex')
-    % show the inital guess
+    xlabel('\(f-f_{0,h}\) (MHz)','fontsize',14,'interpreter','latex')
+       % show the inital guess
     %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
      box on
     fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
-   set(gca,'fontsize',14)
-   xlim([-36.5,36.5])
+   set(gca,'fontsize',font_size_global)
+    ylabel(ylabel_str,'fontsize',19.5,'interpreter','latex')
+   xlim([-7,13])
+  errorbar(signal_bined.freq_mean-cen_val,signal_bined.val,...
+        signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
+         signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
+        'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+         'MarkerFaceColor',colors_main(2,:),'LineWidth',2.5);
+hold on    
+plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:),'MarkerEdgeColor',colors_main(2,:))
+ax = gca;
+outerpos = ax.OuterPosition;
+ti = ax.TightInset;
+left = outerpos(1) + ti(1);
+bottom = outerpos(2) + ti(2);
+ax_width = outerpos(3) - ti(1) - ti(3);
+ax_height = outerpos(4) - ti(2) - ti(4);
+ax.Position = [left bottom ax_width ax_height];
+
+
+fig = gcf;
+set(fig,'Position',[1126 491 693 442])
+fig.PaperPositionMode = 'auto';
+fig_pos = fig.PaperPosition;
+fig.PaperSize = [fig_pos(3) fig_pos(4)];
+print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\heating_scan','-dpdf')

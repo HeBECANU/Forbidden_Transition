@@ -182,10 +182,10 @@ ac_shift = 0;%2.95062819924799e-01.*data.integrated_pd(data.is_shot_good);
 shifts = ac_shift;
 %%
 %set up the colors to use
-colors_main=[[233,87,0];[33,188,44];[0,165,166]];
+colors_main=[[88,113,219];[60,220,180]./1.75;[88,113,219]./1.7]; %[88,113,219]%[96,144,201]
 %colors_main = [[75,151,201];[193,114,66];[87,157,95]];
 font_name='cmr10';
-font_size_global=17;
+font_size_global=20;
 
 % bin data points and fit
 
@@ -228,55 +228,55 @@ probe_freq_bins = linspace(min(xdata),max(xdata),num_bins);
 
 stfig('combined data')
 clf
-ylabel_str='Normalised scattered fraction (arb. units)';
+ylabel_str='Scattered fraction (arb. units)';
 
 
-    
-    amp_guess=max(ydata);
-    ydata_shifted =ydata-min(ydata);
-    mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
-    %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
-    sig_guess=10;
-    offset_guess = 0;
-    amp_guess=4.556661697251370e+01;
-    mu_guess=1;
-    sig_guess=2.866375907039084e+00;
-    offset_guess=-3.340314780403577e-01;
-    fo = statset('TolFun',10^-6,...
-        'TolX',1e-4,...
-        'MaxIter',1e4,...
-        'UseParallel',1);
-    % 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
-    inital_guess=[amp_guess,mu_guess,sig_guess,offset_guess];
-    fitobject=fitnlm(xdata,ydata,...
-        fun1d,...
-         inital_guess,...
-        'CoefficientNames',coeff_names,'Options',fo);
-    fit_coeff=fitobject.Coefficients.Estimate;
-    fit_se=fitobject.Coefficients.SE;
-    cen_val =fit_coeff(2);
-    fitobject
-    
+
+amp_guess=max(ydata);
+ydata_shifted =ydata-min(ydata);
+mu_guess=wmean(xdata,ydata_shifted); %compute the weighted mean
+%sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
+sig_guess=10;
+offset_guess = 0;
+amp_guess=4.556661697251370e+01;
+mu_guess=1;
+sig_guess=2.866375907039084e+00;
+offset_guess=-3.340314780403577e-01;
+fo = statset('TolFun',10^-6,...
+    'TolX',1e-4,...
+    'MaxIter',1e4,...
+    'UseParallel',1);
+% 'y~amp*exp(-1*((x1-mu)^2)/(2*sig^2))+off',...
+inital_guess=[amp_guess,mu_guess,sig_guess,offset_guess];
+fitobject=fitnlm(xdata,ydata,...
+    fun1d,...
+    inital_guess,...
+    'CoefficientNames',coeff_names,'Options',fo);
+fit_coeff=fitobject.Coefficients.Estimate;
+fit_se=fitobject.Coefficients.SE;
+cen_val =fit_coeff(2);
+fitobject
+
 %     amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1),fitobject.Coefficients.SE(1),'b');
 %     cen_str=string_value_with_unc(fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2),'b');
 %     width_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
-    
-    amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1)/fitobject.Coefficients.Estimate(3)^2+fitobject.Coefficients.Estimate(4),fitobject.Coefficients.SE(1)/fitobject.Coefficients.Estimate(3)^2,'b');
-    cen_str=string_value_with_unc(fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2),'b');
-    width_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
-    offset_str=string_value_with_unc(fitobject.Coefficients.Estimate(4),fitobject.Coefficients.SE(4),'b');
-    
-    width_units='MHz';
-    offset_units='counts';
-    amp_units='counts';
-    str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   Offset %s %s',...
-        cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
-%     text(0.01,0.9,str,'Units','normalized'); 
-    %wide on edges many on peak
-    probe_freq_bins =[linspace(min(xdata),fitobject.Coefficients.Estimate(2)-8,8),...
-        linspace(fitobject.Coefficients.Estimate(2)-6,fitobject.Coefficients.Estimate(2)+6,8),...
-        linspace(fitobject.Coefficients.Estimate(2)+8,max(xdata),8)];
-    iimax=numel(probe_freq_bins)-1;
+
+amp_str=string_value_with_unc(fitobject.Coefficients.Estimate(1)/fitobject.Coefficients.Estimate(3)^2+fitobject.Coefficients.Estimate(4),fitobject.Coefficients.SE(1)/fitobject.Coefficients.Estimate(3)^2,'b');
+cen_str=string_value_with_unc(fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2),'b');
+width_str=string_value_with_unc(abs(fitobject.Coefficients.Estimate(3)),fitobject.Coefficients.SE(3),'b');
+offset_str=string_value_with_unc(fitobject.Coefficients.Estimate(4),fitobject.Coefficients.SE(4),'b');
+
+width_units='MHz';
+offset_units='counts';
+amp_units='counts';
+str=sprintf('Gauss fit \n   Cen    %s %s \n   Width %s %s \n   Amp   %s %s \n   Offset %s %s',...
+    cen_str,width_units,width_str,width_units,amp_str,amp_units,offset_str,offset_units);
+%     text(0.01,0.9,str,'Units','normalized');
+%wide on edges many on peak
+probe_freq_bins =[linspace(min(xdata),fitobject.Coefficients.Estimate(2)-8,8),...
+    linspace(fitobject.Coefficients.Estimate(2)-6,fitobject.Coefficients.Estimate(2)+6,8),...
+    linspace(fitobject.Coefficients.Estimate(2)+8,max(xdata),8)];
+iimax=numel(probe_freq_bins)-1;
 signal_bined.freq_std=nan(iimax,1);
 signal_bined.val=nan(iimax,1);
 signal_bined.unc_val=nan(iimax,1);
@@ -285,7 +285,7 @@ signal_bined.freq_obs_min_max_mean_diff=nan(iimax,2);
 for ii=1:iimax
     signal_bined.freq_bin_lims(ii,:)=[probe_freq_bins(ii),probe_freq_bins(ii+1)];
     bin_mask=xdata<=probe_freq_bins(ii+1) & xdata>probe_freq_bins(ii);
-     signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
+    signal_bined.freq_bin_cen(ii)=nanmean(probe_freq_bins(ii:ii+1));
     if sum(bin_mask)==0
         warning('no elements')
         signal_bined.num_bin(ii)=0;
@@ -299,33 +299,62 @@ for ii=1:iimax
         signal_bined.freq_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
         signal_bined.freq_bin_lims_mean_diff(ii,:)=abs(signal_bined.freq_bin_lims(ii,:)-signal_bined.freq_mean(ii));
         signal_bined.freq_obs_min_max_mean_diff(ii,:)=abs(signal_bined.freq_obs_min_max(ii,:)-signal_bined.freq_mean(ii));
-     end
+    end
 end
-    errorbar(signal_bined.freq_mean-cen_val,signal_bined.val,...
-        signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
-         signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
-        'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
-         'MarkerFaceColor',colors_detail(3,:),'LineWidth',2.5);
-hold on    
-plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:))
-    
+
+
 x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
-    [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
-    hold on
-    plot(x_sample_fit-cen_val,ysamp_val,'r')
-    drawnow
-    yl=ylim;
-    plot(x_sample_fit-cen_val,ysamp_ci,'color',[1,1,1].*0.5)
-    ylim(yl)
-    xlim([min(xdata),max(xdata)]-cen_val)
-    xlabel('\(f-f_0\) (MHz)','fontsize',font_size_global,'interpreter','latex')
-    ylabel(ylabel_str,'fontsize',font_size_global,'interpreter','latex')
-    % show the inital guess
-    %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
-     box on
-    fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
-   set(gca,'fontsize',font_size_global)
-   xlim([-36.5,36.5])
+[ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
+hold on
+plot(x_sample_fit-cen_val,ysamp_val,'k','LineWidth',1.5)
+drawnow
+yl=ylim;
+plot(x_sample_fit-cen_val,ysamp_ci,'color',[1,1,1].*0.5)
+
+curve1 = ysamp_ci(:,1)';
+curve2 = ysamp_ci(:,2)';
+x1 = (x_sample_fit-cen_val)';
+x2 = [x1, fliplr(x1)];
+inBetween = [curve1, fliplr(curve2)];
+h = fill(x2, inBetween, 'g');
+h.FaceColor = [0.31 0.31 0.32].*2;
+h.FaceAlpha = 0.5;
+
+errorbar(signal_bined.freq_mean(3:end-1)-cen_val,signal_bined.val(3:end-1),...
+    signal_bined.unc_val(3:end-1,1),signal_bined.unc_val(3:end-1,1),...
+    signal_bined.freq_obs_min_max_mean_diff(3:end-1,1), signal_bined.freq_obs_min_max_mean_diff(3:end-1,2),...
+    'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
+    'MarkerFaceColor',colors_main(2,:),'LineWidth',2.5);
+hold on
+plot(signal_bined.freq_mean(2:end-1)-cen_val,signal_bined.val(2:end-1),'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:),'MarkerEdgeColor',colors_main(2,:))
+
+ylim(yl)
+xlim([min(xdata),max(xdata)]-cen_val)
+xlabel('\(f-f_{0,d}\) (MHz)','fontsize',font_size_global,'interpreter','latex')
+% show the inital guess
+%plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
+box on
+fprintf('transition frequnency %s\n',string_value_with_unc(predicted_freq+fitobject.Coefficients.Estimate(2),fitobject.Coefficients.SE(2)))
+set(gca,'fontsize',font_size_global)
+ylabel(ylabel_str,'fontsize',font_size_global-0.8,'interpreter','latex')
+xlim([-36.5,36.5])
+ax = gca;
+outerpos = ax.OuterPosition;
+ti = ax.TightInset;
+left = outerpos(1) + ti(1);
+bottom = outerpos(2) + ti(2);
+ax_width = outerpos(3) - ti(1) - ti(3);
+ax_height = outerpos(4) - ti(2) - ti(4);
+ax.Position = [left-0.014 bottom-0.002 ax_width+0.013 ax_height+0.01818];
+
+
+fig = gcf;
+set(fig,'Position',[1126 491 693 442])
+fig.PaperPositionMode = 'auto';
+fig_pos = fig.PaperPosition;
+fig.PaperSize = [fig_pos(3) fig_pos(4)-0.007];
+
+print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')
     %%
     stfig('All data')
     plot(xdata,ydata,'x')
