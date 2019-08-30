@@ -1,5 +1,5 @@
 % load in heating data
-%load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190724T095142\data_results.mat')
+load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190724T095142\data_results.mat')
 shot = 7;
 y = out_data.data.al_pulses.fit.temperature.val(shot,:).*1e6;
 dy = out_data.data.al_pulses.fit.temperature.unc(shot,:).*1e6;

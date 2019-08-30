@@ -24,7 +24,7 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden427_overnight_heating_method';
+anal_opts.tdc_import.dir='X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -256,7 +256,7 @@ anal_opts.atom_laser=[];
 anal_opts.atom_laser.pulsedt=240e-3;%120e-3;%
 anal_opts.atom_laser.t0=1.71056; %1.6373;%center i ntime of the first pulse
 anal_opts.atom_laser.start_pulse=1; %atom laser pulse to start with
-anal_opts.atom_laser.pulses=95;
+anal_opts.atom_laser.pulses=35;
 
 anal_opts.atom_laser.pulse_twindow=anal_opts.atom_laser.pulsedt*0.9;
 tmp_xlim=[-45,45];    
@@ -292,12 +292,12 @@ data.signal.heating = forbidden_signal_heating(data,anal_opts.heating_fit);
 
 
 anal_opts.cal_model=[];
-anal_opts.cal_model.smooth_time=60*1;
+anal_opts.cal_model.smooth_time=60*20;
 anal_opts.cal_model.plot=true;
 % Create a calibration model
 data.cal = make_cal_model_heating(anal_opts.cal_model,data);
 
-%%
+%
 signal_bined=[];
 signal_unbinned.msr.val = data.cal.calibrated_signal.val;
 signal_unbinned.msr.freq = data.signal.heating.msr.freq;

@@ -28,7 +28,7 @@ color_shaded=colorspace('LCH->RGB',color_shaded);
 
 
 %import heating data
-load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190718T110943\data_results.mat')
+load('X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190724T095142\data_results.mat')%20190802T130932,20190718T110943,20190830T144824,20190724T095142
 Ti = out_data.data.signal.msr.val(:,2);
 Tf = out_data.data.signal.msr.val(:,3);
 T=(Ti+Tf)./2;
@@ -173,4 +173,4 @@ set(fig,'Position',[1126 491 693 442])
 fig.PaperPositionMode = 'auto';
 fig_pos = fig.PaperPosition;
 fig.PaperSize = [fig_pos(3) fig_pos(4)];
-print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\heating_scan','-dpdf')
+% print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\heating_scan','-dpdf')
