@@ -158,6 +158,7 @@ h.FaceAlpha = 0.5;
          'MarkerFaceColor',colors_main(2,:),'LineWidth',2.5);
 hold on    
 plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:),'MarkerEdgeColor',colors_main(2,:))
+set(gca,'TickLabelInterpreter','latex')
 ax = gca;
 outerpos = ax.OuterPosition;
 ti = ax.TightInset;
