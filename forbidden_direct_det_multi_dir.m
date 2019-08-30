@@ -156,7 +156,7 @@ data.is_shot_good = logical(data.is_shot_good);
 offset = 2.*interp1(wm_offset(:,1),wm_offset(:,2),data.time,'pchip');%spline
 offset_run = 2.*interp1(wm_offset(:,1),wm_offset(:,2),run_time,'pchip');% 'makima'pchip 'spline' 'nearest'
 % offset_run = smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),run_time,'spline'),'sgolay',1);%
-t_temp = linspace(min(wm_offset(:,1)),max(wm_offset(:,1)),1000);
+t_temp = linspace(min(wm_offset(:,1)),max(wm_offset(:,1)),4000);
 offset_mdl =  2.*interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'pchip');% 'makima' pchip 'spline' 'nearest'
 % offset_mdl =  smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'spline'),'sgolay',300);%
 %plot drift model
@@ -302,31 +302,31 @@ for ii=1:iimax
     end
 end
 
-
+y_norm = max(signal_bined.val);
 x_sample_fit=col_vec(linspace(min(xdata),max(xdata),1e3));
 [ysamp_val,ysamp_ci]=predict(fitobject,x_sample_fit,'Prediction','curve','Alpha',1-erf(1/sqrt(2))); %'Prediction','observation'
 hold on
-plot(x_sample_fit-cen_val,ysamp_val,'k','LineWidth',1.5)
+plot(x_sample_fit-cen_val,ysamp_val./y_norm,'k','LineWidth',1.5)
 drawnow
 yl=ylim;
-plot(x_sample_fit-cen_val,ysamp_ci,'color',[1,1,1].*0.5)
+plot(x_sample_fit-cen_val,ysamp_ci./y_norm,'color',[1,1,1].*0.5)
 
 curve1 = ysamp_ci(:,1)';
 curve2 = ysamp_ci(:,2)';
 x1 = (x_sample_fit-cen_val)';
 x2 = [x1, fliplr(x1)];
 inBetween = [curve1, fliplr(curve2)];
-h = fill(x2, inBetween, 'g');
+h = fill(x2, inBetween./y_norm, 'g');
 h.FaceColor = [0.31 0.31 0.32].*2;
 h.FaceAlpha = 0.5;
 
-errorbar(signal_bined.freq_mean(3:end-1)-cen_val,signal_bined.val(3:end-1),...
-    signal_bined.unc_val(3:end-1,1),signal_bined.unc_val(3:end-1,1),...
+errorbar(signal_bined.freq_mean(3:end-1)-cen_val,signal_bined.val(3:end-1)./y_norm,...
+    signal_bined.unc_val(3:end-1,1)./y_norm,signal_bined.unc_val(3:end-1,1)./y_norm,...
     signal_bined.freq_obs_min_max_mean_diff(3:end-1,1), signal_bined.freq_obs_min_max_mean_diff(3:end-1,2),...
     'o','CapSize',0,'MarkerSize',5,'Color',colors_main(3,:),...
     'MarkerFaceColor',colors_main(2,:),'LineWidth',2.5);
 hold on
-plot(signal_bined.freq_mean(2:end-1)-cen_val,signal_bined.val(2:end-1),'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:),'MarkerEdgeColor',colors_main(2,:))
+plot(signal_bined.freq_mean(2:end-1)-cen_val,signal_bined.val(2:end-1)./y_norm,'o','MarkerSize',5,'MarkerFaceColor',colors_detail(1,:),'MarkerEdgeColor',colors_main(2,:))
 
 ylim(yl)
 xlim([min(xdata),max(xdata)]-cen_val)
@@ -339,22 +339,23 @@ set(gca,'fontsize',font_size_global)
 ylabel(ylabel_str,'fontsize',font_size_global-0.8,'interpreter','latex')
 xlim([-36.5,36.5])
 ax = gca;
+set(gca,'TickLabelInterpreter','latex')
 outerpos = ax.OuterPosition;
 ti = ax.TightInset;
 left = outerpos(1) + ti(1);
 bottom = outerpos(2) + ti(2);
 ax_width = outerpos(3) - ti(1) - ti(3);
 ax_height = outerpos(4) - ti(2) - ti(4);
-ax.Position = [left-0.014 bottom-0.002 ax_width+0.013 ax_height+0.01818];
+ax.Position = [left bottom-0.0036 ax_width ax_height];
 
 
 fig = gcf;
 set(fig,'Position',[1126 491 693 442])
 fig.PaperPositionMode = 'auto';
 fig_pos = fig.PaperPosition;
-fig.PaperSize = [fig_pos(3) fig_pos(4)-0.007];
+fig.PaperSize = [fig_pos(3) fig_pos(4)];
 
-print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')
+% print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')
     %%
     stfig('All data')
     plot(xdata,ydata,'x')
