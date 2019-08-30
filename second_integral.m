@@ -7,7 +7,7 @@ R_y = sqrt(2*kb*nanmean(T)/(mhe*wy^2));
 R_z = sqrt(2*kb*nanmean(T)/(mhe*wz^2));
 %% import camera data
 
-cam_dir = 'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments';
+cam_dir = 'X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments';
 % Get a list of all files and folders in this folder.
 files = dir(cam_dir);
 % Get a logical vector that tells which is a directory.
@@ -56,7 +56,7 @@ int_vec = zeros(size(subDirs,1)-2,1);
 %     int_vec(ii-2) = int_val;
 % end
 %%
-load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments\probe_image_data.mat','I_field','pos')
+load('X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments\probe_image_data.mat','I_field','pos')
 for ii = 1:10
     I_tot = I_field(:,:,ii);
     [M,I]= max(I_tot);

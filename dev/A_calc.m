@@ -1,5 +1,5 @@
 %A value calculator
-
+clear all
 %constants
 clear const
 hebec_constants
@@ -15,7 +15,7 @@ wz=2*pi*428;
 v0=700939267*1e6; %MHz
 
 %% import heating data
-load('Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190716_forbidden427_overnight_heating_method\out\20190724T095142\data_results.mat')
+load('X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190718T110943\data_results.mat')
 Ti = out_data.data.signal.msr.val(:,2);
 Tf = out_data.data.signal.msr.val(:,3);
 T=(Ti+Tf)./2;
