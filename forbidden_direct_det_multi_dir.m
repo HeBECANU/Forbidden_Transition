@@ -64,19 +64,10 @@ data_dirs = {'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190713_forbidden427
     %'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190704_forbidden_long interrogation\'
     };
 %%
-data.signal = [];
-data.freq = [];
-data.time = [];
-data.atom_num = [];
-data.probe_num = [];
-data.integrated_pd = [];
-data.is_shot_good = [];
-
-comp = [1,1,1,1,1,1,1,1,1];
+% comp = [1,1,1,1,1,1,1,1,1];
 % comp = [3.4,3.2,7.3,6.3,7.8,6.4,1];
 % comp = [3.4,4.1,3.2,7.3,6.3,7.8,6.4];
-run_time = [];
-avg_pd = [];
+
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5,0,-7.8];
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5,0];
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5];
@@ -84,87 +75,22 @@ cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5];
 cen_unc = [0.2,0.2,0.2,0.12,0.2,0.3,0.13];
 % cen = [1];
 % cen_unc = [0.1];
-for loop_idx=1:length(data_dirs)
-    current_dir = data_dirs{loop_idx};
-    fprintf('importing data from \n %s \n',current_dir)
-    if ~strcmp(current_dir(end),'\')
-        current_dir = [current_dir,'\'];
-    end
-    out_dirs=dir(fullfile(current_dir,'out'));
-    out_dirs=out_dirs(3:end);
-    out_dirs=out_dirs(cat(1,out_dirs.isdir));
-    if size(out_dirs,1)==0
-        warning(sprintf('dir \n %s \n does not contain any out dirs',current_dir)), 
-    else 
-        % convert the folder name (iso time) to posix time
-        time_posix=cellfun(@(x) posixtime(datetime(datenum(x,'yyyymmddTHHMMSS'),'ConvertFrom','datenum')),{out_dirs.name});
-        [~,sort_idx]=sort(time_posix,'descend');
-        out_dirs=out_dirs(sort_idx);
-        looking_for_data_dir=1;
-        folder_index=1;
-        %runs through all the out put dirs for a given run and looks for saved data, if none is there
-        %skips that data dir
-        while looking_for_data_dir
-            try
-                out_instance_folder_path=fullfile(current_dir,'out',out_dirs(folder_index).name,'data_results.mat');
-                if (exist(out_instance_folder_path,'file') || ...
-                    exist(out_instance_folder_path,'file')) && ...
-                    exist(out_instance_folder_path,'file')
-                    looking_for_data_dir=0;
-                else
-                    folder_index=folder_index+1;
-                    if folder_index>numel(out_dirs) %if beyon the end of the folder list return nan;
-                         looking_for_data_dir=0;
-                         folder_index=nan;
-                         warning('did not find a valid output direcory for folder %s',current_dir)
-                    end
-                end
-                %~and(isfile([current_dir,'out\',most_recent_dir.name,'\main_data.mat']),isfile([current_dir,'out\',most_recent_dir.name,'\drift_data.mat']))
-                %offset = offset + 1;
-                %most_recent_dir=out_dirs(end-offset,1);
-                %check = drift_data.avg_coef; %check if it has the avg coefs update
+%% import the preanalysied data from the give directories
+data = import_data(data_dirs);
 
-            catch e
-                fprintf('\n dir: %s didnt work \n',current_dir)
-                msgText = getReport(e)
-                continue
-            end
-        end
-        if ~isnan(folder_index)
-
-            load(fullfile(current_dir,'out',out_dirs(folder_index).name,'data_results.mat'))
-            % now do some serious data plumbing
-            %append to main structure
-            
-            data.signal = cat(1,data.signal,out_data.signal.cal.calibrated_signal.val./comp(loop_idx));
-            data.freq = cat(1,data.freq,out_data.freq);
-            data.time = cat(1,data.time,out_data.time);
-            data.atom_num = cat(1,data.atom_num,out_data.atom_num');
-            data.probe_num = cat(1,data.probe_num,out_data.probe_num');
-            data.integrated_pd = cat(1,data.integrated_pd,out_data.integrated_pd);
-            data.is_shot_good = cat(1,data.is_shot_good,out_data.is_shot_good);
-            run_time = [run_time,mean(out_data.time)];
-            avg_pd = [avg_pd,mean(out_data.integrated_pd(out_data.is_shot_good))];
-%             if ~isequal(size(drift_data_compiled.to.val),size(drift_data_compiled.wp.qwp))
-%                 error('things are not the same size') 
-%             end
-
-        end
-    end
-end
 %% create drift model
 data.is_shot_good = logical(data.is_shot_good);
 % offset = interp1(wm_offset(:,1),wm_offset(:,2),data.time);%,'spline');
 offset = 2.*interp1(wm_offset(:,1),wm_offset(:,2),data.time,'pchip');%spline
-offset_run = 2.*interp1(wm_offset(:,1),wm_offset(:,2),run_time,'pchip');% 'makima'pchip 'spline' 'nearest'
-% offset_run = smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),run_time,'spline'),'sgolay',1);%
+offset_run = 2.*interp1(wm_offset(:,1),wm_offset(:,2),data.run_time,'pchip');% 'makima'pchip 'spline' 'nearest'
+% offset_run = smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),data.run_time,'spline'),'sgolay',1);%
 t_temp = linspace(min(wm_offset(:,1)),max(wm_offset(:,1)),4000);
 offset_mdl =  2.*interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'pchip');% 'makima' pchip 'spline' 'nearest'
 % offset_mdl =  smoothdata(interp1(wm_offset(:,1),wm_offset(:,2),t_temp,'spline'),'sgolay',300);%
 %plot drift model
 stfig('wm drift model')
 clf
-%scatter(run_time,cen)
+%scatter(data.run_time,cen)
 hold on
 %plot(data.time,offset)
 plot(t_temp,offset_mdl)
@@ -173,14 +99,14 @@ ylabel('wavemetre offset (MHz)')
 xlabel('Posix time (s)')
 box on
 stfig('centers of distributions')
-errorbar(run_time,cen-offset_run,cen_unc,'x')
+errorbar(data.run_time,cen-offset_run,cen_unc,'x')
 xlabel('time')
 ylabel('corrected cen')
 std(cen-offset_run)
 %% set up ac stark shifts
 Zeeman_shift = 0;%-1.7154;%3.16329586028859e-01,
 ac_shift = 0.30864.*data.integrated_pd(data.is_shot_good);%2.95062819924799e-01.
-ac_shift_run = 0.30864.*avg_pd;
+ac_shift_run = 0.30864.*data.avg_pd;
 shifts = ac_shift;
 cen_spread_offset = nanstd(cen-offset_run-ac_shift_run)
 cen_spread = std(cen)

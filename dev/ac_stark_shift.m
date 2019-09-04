@@ -1,5 +1,7 @@
+function wnlm = ac_stark_shift(plot_model)
 %measure of ac stark shift
 
+%center of runs for differing average intensity
 %weekened
 data=[%6.26160218413720e+00,1.96828982727647e-01,1.446229756998192e+01
 %rf 2.05
@@ -29,8 +31,9 @@ y_RF=data_no_RF(:,1);
 w=1./data(:,2).^2;
 modelFun = @(b,x) b(1)+b(2).*x;
 start=[1,1];
-wnlm = fitnlm(x,y,modelFun,start,'Weight',w)
+wnlm = fitnlm(x,y,modelFun,start,'Weight',w);
 xx=linspace(0,21)';
+if plot_model
 sfigure(8080)
 errorbar(x,y,data(:,2),'ko');
 hold on
@@ -42,9 +45,11 @@ hold off
 %with ac shift 700939267.98±0.07
 %with new ac shift transition frequnency 700939267.68±0.08
 %without 700939276.25
+end
 %%
 %no RF 5.41580230847063e+00
 %compare to 
-[no_RF_predict,no_RF_ci]= predict(wnlm,1.620427285097443e+01)
-RF_shift = no_RF_predict-5.41580230847063e+00
-RF_err = sqrt(range(no_RF_ci).^2+0.5.^2)
+[no_RF_predict,no_RF_ci]= predict(wnlm,1.620427285097443e+01);
+RF_shift = no_RF_predict-5.41580230847063e+00;
+RF_err = sqrt(range(no_RF_ci).^2+0.5.^2);
+end
