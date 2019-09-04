@@ -76,6 +76,7 @@ comp = [1,1,1,1,1,1,1,1,1];
 % comp = [3.4,3.2,7.3,6.3,7.8,6.4,1];
 % comp = [3.4,4.1,3.2,7.3,6.3,7.8,6.4];
 run_time = [];
+avg_pd = [];
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5,0,-7.8];
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5,0];
 cen = [5.4,7.2,2.3,6.56,4.2,6.0,4.5];
@@ -143,6 +144,7 @@ for loop_idx=1:length(data_dirs)
             data.integrated_pd = cat(1,data.integrated_pd,out_data.integrated_pd);
             data.is_shot_good = cat(1,data.is_shot_good,out_data.is_shot_good);
             run_time = [run_time,mean(out_data.time)];
+            avg_pd = [avg_pd,mean(out_data.integrated_pd(out_data.is_shot_good))];
 %             if ~isequal(size(drift_data_compiled.to.val),size(drift_data_compiled.wp.qwp))
 %                 error('things are not the same size') 
 %             end
@@ -174,12 +176,14 @@ stfig('centers of distributions')
 errorbar(run_time,cen-offset_run,cen_unc,'x')
 xlabel('time')
 ylabel('corrected cen')
-cen_spread_offset = std(cen-offset_run)
-cen_spread = std(cen)
+std(cen-offset_run)
 %% set up ac stark shifts
 Zeeman_shift = 0;%-1.7154;%3.16329586028859e-01,
-ac_shift = 0;%2.95062819924799e-01.*data.integrated_pd(data.is_shot_good);
+ac_shift = 0.30864.*data.integrated_pd(data.is_shot_good);%2.95062819924799e-01.
+ac_shift_run = 0.30864.*avg_pd;
 shifts = ac_shift;
+cen_spread_offset = nanstd(cen-offset_run-ac_shift_run)
+cen_spread = std(cen)
 %%
 %set up the colors to use
 colors_main=[[88,113,219];[60,220,180]./1.75;[88,113,219]./1.7]; %[88,113,219]%[96,144,201]

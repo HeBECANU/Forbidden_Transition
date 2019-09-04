@@ -10,9 +10,9 @@ inital_guess=[4e-6,4,2.99,0];
 fitobject_l=fitnlm(f,dT_dt./P,...
     loren_fun1d,...
     inital_guess,...
-    'CoefficientNames',coeff_names,'Options',fo)
+    'CoefficientNames',coeff_names,'Options',fo);
 fit_coeff_l=fitobject_l.Coefficients.Estimate;
 fit_unc_l=fitobject_l.Coefficients.SE;
 int_1 = (v0+fit_coeff_l(3)*1e6).*pi*fit_coeff_l(1)/abs(fit_coeff_l(2))*1e6;
 
-int_1_err = int_1*sqrt((fit_unc_l(1)/fit_coeff_l(1)).^2+(fit_unc_l(2)/fit_coeff_l(2)).^2)
+int_1_err = int_1.*sqrt((fit_unc_l(1)/fit_coeff_l(1)).^2+(fit_unc_l(2)/fit_coeff_l(2)).^2+(fit_unc_l(4)/fit_coeff_l(4)).^2);

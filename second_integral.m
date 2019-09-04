@@ -1,13 +1,10 @@
 % calculates the second (and most complicated) integral required for the A
 % values
 beta = (pi*2*kb.*nanmean(T)/mhe)^(3/2)*1/(wx*wy*wz);
-R_r = 2*kb*nanmean(T)/mhe*(1/wx^2+1/wy^2+1/wz^2);
-R_x = sqrt(2*kb*nanmean(T)/(mhe*wx^2));
-R_y = sqrt(2*kb*nanmean(T)/(mhe*wy^2));
-R_z = sqrt(2*kb*nanmean(T)/(mhe*wz^2));
+d_beta = beta.*sqrt((nanstd(T)/nanmean(T)).^2+(dwx/wx).^2+(dwy/wy).^2+(dwz/wz).^2);
 %% import camera data
 
-cam_dir = 'X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments';
+cam_dir = 'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments';
 % Get a list of all files and folders in this folder.
 files = dir(cam_dir);
 % Get a logical vector that tells which is a directory.
@@ -24,6 +21,8 @@ y_indx = 700:900;
 x_indx = 800:1300;
 [x_I,y_I] = meshgrid(x(x_indx),y(y_indx));
 int_vec = zeros(size(subDirs,1)-2,1);
+int_vec_2 = zeros(size(subDirs,1)-2,1);
+int_vec_unc = zeros(size(subDirs,1)-2,1);
 % loads data in from the images themselves
 % for ii = 3:size(subDirs,1)
 %     current_folder = [subDirs(ii,:),'\',Foldername(ii,:)];
@@ -56,7 +55,7 @@ int_vec = zeros(size(subDirs,1)-2,1);
 %     int_vec(ii-2) = int_val;
 % end
 %%
-load('X:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments\probe_image_data.mat','I_field','pos')
+load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_camera_measurments\probe_image_data.mat','I_field','pos')
 for ii = 1:10
     I_tot = I_field(:,:,ii);
     [M,I]= max(I_tot);
@@ -64,10 +63,19 @@ for ii = 1:10
     y0 = y(I(ind));
     z0 = x(ind);
     prod_val = I_tot(y_indx,x_indx).*exp(-(x_I-z0).^2./R_z.^2).*exp(-(y_I-y0).^2./R_y.^2);%value of the integral over this plane
+    prod_val_unc = prod_val.^2.*((d_beta/beta)^2+(x_I-z0).^4.*(2*R_z^(-3)*dR_z)^2+(y_I-y0).^4.*(2*R_y^(-3)*dR_y)^2);%value of the integral over this plane
+    prod_val_2 = prod_val.^2;
     int_val = trapz(y(y_indx),trapz(x(x_indx),prod_val,2));
+    int_val_2 = trapz(y(y_indx),trapz(x(x_indx),prod_val_2,2));
+    int_val_unc = trapz(y(y_indx),trapz(x(x_indx),prod_val_unc,2));
     int_vec(ii) = int_val;
+    int_vec_2(ii) = int_val_2;
+    int_vec_unc(ii) = int_val_unc;
 end
 x0 = 0.013;
+d_x0 = 0.0005;
 int_2 = 1/beta.*trapz(pos,int_vec.*exp(-(pos-x0).^2./R_x.^2));
+int_2_err = int_2*sqrt((2*R_x^(-1)*dR_x)^2+(2*R_y^(-1)*dR_y)^2+(2*R_z^(-1)*dR_z)^2);%first guess at uncertainty
+% int_2_err_int = sqrt(1/beta.^2.*trapz(pos,int_vec_unc.*(exp(-(pos-x0).^2./R_x.^2)).^2+int_vec_2.*(2*R_x^(-3)*dR_x)^2.*(pos-x0).^4.*(exp(-(pos-x0).^2./R_x.^2)).^2))
 %sfigure(5556)
 %plot(pos,int_vec)%.*const have to multiply final val by const
