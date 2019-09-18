@@ -1,6 +1,6 @@
-function offset = wm_drift_model(data,wm_offset,plot_wm_model)
+function offset = wm_drift_model(time,wm_offset,plot_wm_model)
 %generates drift model for wm
-offset = 2.*interp1(wm_offset(:,1),wm_offset(:,2),data.time,'pchip');
+offset = 2.*interp1(wm_offset(:,1),wm_offset(:,2),time,'pchip');
 
 
 %plot drift model

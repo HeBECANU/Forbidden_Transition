@@ -31,7 +31,7 @@ cli_format_text('','c',3)
 data = import_data(data_dirs);
 
 %% create drift model
-data.offset = wm_drift_model(data,wm_offset,plot_wm_model);
+data.offset = wm_drift_model(data.time,wm_offset,plot_wm_model);
 
 %% Apply ac stark shift
 % crete the ac stark shift model
@@ -53,6 +53,9 @@ predicted_freq=700939267; %MHz
 cen_val =fit_coeff(2);
 
 %wide on edges many on peak
+xdata=data.freq(data.is_shot_good) - data.offset(data.is_shot_good) - data.ac_shift;
+ydata=data.signal(data.is_shot_good);
+
 probe_freq_bins =[linspace(min(xdata),fitobject.Coefficients.Estimate(2)-8,8),...
     linspace(fitobject.Coefficients.Estimate(2)-6,fitobject.Coefficients.Estimate(2)+6,8),...
     linspace(fitobject.Coefficients.Estimate(2)+8,max(xdata),8)];
@@ -115,8 +118,12 @@ box on
 set(gca,'fontsize',font_size_global)
 ylabel(ylabel_str,'fontsize',font_size_global-0.8,'interpreter','latex')
 xlim([-36.5,36.5])
+set(gca,'FontWeight','bold')
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'linewidth',1.5)
 ax = gca;
-set(gca,'TickLabelInterpreter','latex','FontWeight','bold')
+ax.XAxis.TickLabelFormat= '\\textbf{%g}';
+ax.YAxis.TickLabelFormat= '\\textbf{%g}';
 outerpos = ax.OuterPosition;
 ti = ax.TightInset;
 left = outerpos(1) + ti(1);
@@ -127,9 +134,9 @@ ax.Position = [left bottom-0.0036 ax_width ax_height];
 
 
 fig = gcf;
-set(fig,'Position',[1126 491 693 442])
+set(fig,'Position',[1126 491 693 442+35])
 fig.PaperPositionMode = 'auto';
 fig_pos = fig.PaperPosition;
 fig.PaperSize = [fig_pos(3) fig_pos(4)];
 
-% print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')
+print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')

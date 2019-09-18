@@ -97,7 +97,7 @@ stfig('heating data')
 clf
 cen_val = fit_coeff_l(3);
 % cen_val = 0;
-ylabel_str='\(\Delta \, dT/dt\) (nK/s)';
+ylabel_str='\textbf{\boldmath{\(\Delta \, dT/dt\)} (nK/s)}';
 xdata = f;
 ydata= dT_dt.*1e9;
     probe_freq_bins =[linspace(min(xdata),max(xdata),8)];
@@ -145,7 +145,8 @@ h.FaceAlpha = 0.5;
     plot(x_sample_fit-cen_val,ysamp_ci.*1e9,'color',[1,1,1].*0.5)
     ylim([0,2.8])
     xlim([min(xdata),max(xdata)]-cen_val)
-    xlabel('\(f-f_{0,h}\) (MHz)','fontsize',14,'interpreter','latex')
+    xlabel_str='\textbf{\boldmath{\(f-f_{0,h}\)} (MHz)}';
+    xlabel(xlabel_str,'fontsize',14,'interpreter','latex')
        % show the inital guess
     %plot(x_sample_fit,gauss_fun1d(inital_guess,x_sample_fit)*ymultipler)
      box on
@@ -153,6 +154,7 @@ h.FaceAlpha = 0.5;
    set(gca,'fontsize',font_size_global)
     ylabel(ylabel_str,'fontsize',19.5,'interpreter','latex')
    xlim([-7,13])
+   ylim([0,3])
   errorbar(signal_bined.freq_mean-cen_val,signal_bined.val,...
         signal_bined.unc_val(:,1),signal_bined.unc_val(:,1),...
          signal_bined.freq_obs_min_max_mean_diff(:,1), signal_bined.freq_obs_min_max_mean_diff(:,2),...
@@ -160,15 +162,19 @@ h.FaceAlpha = 0.5;
          'MarkerFaceColor',colors_main(2,:),'LineWidth',2.5);
 hold on    
 plot(signal_bined.freq_mean-cen_val,signal_bined.val,'o','MarkerSize',marker_size,'MarkerFaceColor',colors_detail(1,:),'MarkerEdgeColor',colors_main(2,:))
+set(gca,'FontWeight','bold')
 set(gca,'TickLabelInterpreter','latex')
+set(gca,'linewidth',1.5)
 ax = gca;
+ax.XAxis.TickLabelFormat= '\\textbf{%g}';
+ax.YAxis.TickLabelFormat= '\\textbf{%g}';
 outerpos = ax.OuterPosition;
 ti = ax.TightInset;
 left = outerpos(1) + ti(1);
 bottom = outerpos(2) + ti(2);
 ax_width = outerpos(3) - ti(1) - ti(3);
 ax_height = outerpos(4) - ti(2) - ti(4);
-ax.Position = [left bottom ax_width ax_height];
+ax.Position = [left bottom ax_width-0.007 ax_height];
 
 
 fig = gcf;
