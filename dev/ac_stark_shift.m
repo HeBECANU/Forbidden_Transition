@@ -20,7 +20,7 @@ data=[%6.26160218413720e+00,1.96828982727647e-01,1.446229756998192e+01
 6.07657729703271e+00,0.4366,1.579524060634340e+01
 ];
 data_no_RF=[%heating overnight
-4.56197793958740e+00,0.6372,1.899150254186126e+01.*22/25
+%4.56197793958740e+00,0.6372,1.899150254186126e+01.*22/25
 %no RF
 5.41580230847063e+00,0.49,1.620427285097443e+01
 ];
@@ -35,11 +35,14 @@ wnlm = fitnlm(x,y,modelFun,start,'Weight',w);
 xx=linspace(0,21)';
 if plot_model
 sfigure(8080)
-errorbar(x,y,data(:,2),'ko');
+errorbar(x.*3.261617320266882e1/20,y,data(:,2),'ko');
 hold on
-line(xx,predict(wnlm,xx),'color','b')
+line(xx.*3.261617320266882e1/20,predict(wnlm,xx),'color','k')
 
-errorbar(x_RF,y_RF,data_no_RF(:,2),'bs');
+errorbar(x_RF.*3.261617320266882e1/20,y_RF,data_no_RF(:,2),'bs');
+set(gcf,'color','white')
+xlabel('Power of Probe Beam (mW)')
+ylabel('Center of Transitions - f_{ref} (MHz)')
 %line(xx,predict(wnlm,xx),'color','bs')
 hold off
 %with ac shift 700939267.98±0.07
