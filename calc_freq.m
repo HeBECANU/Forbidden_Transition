@@ -3,7 +3,7 @@ clear all
 %analysis options
 %drift model 'makima' pchip 'spline' 'nearest'?
 %plot drift model?
-plot_wm_model = 0;
+plot_wm_model = 1;
 fun_type = 'loren';
 %which model to use
 %% Set up configureations for the direct det analysis
