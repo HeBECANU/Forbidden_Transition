@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -42,12 +42,12 @@
      id="namedview167"
      showgrid="false"
      inkscape:zoom="1.6031157"
-     inkscape:cx="121.87283"
+     inkscape:cx="197.40006"
      inkscape:cy="212.20165"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="svg165"
      showguides="false"
      inkscape:pagecheckerboard="true">
     <inkscape:grid
@@ -186,7 +186,7 @@
          inkscape:connector-curvature="0"
          transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
          d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#000073;fill-opacity:1;fill-rule:evenodd;stroke:#000073;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         style="fill:#4600ff;fill-opacity:1;fill-rule:evenodd;stroke:#4600ff;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
          id="path3198" />
     </marker>
     <marker
@@ -378,7 +378,8 @@
     </marker>
   </defs>
   <g
-     id="g163">
+     id="g163"
+     style="opacity:1">
     <defs
        id="defs1">
       <clipPath
@@ -829,7 +830,7 @@
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';stroke-width:1.04146695"
    id="tspan1506">20</tspan> eV</tspan></text>
   <path
-     style="fill:none;stroke:#000073;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker3200)"
+     style="fill:none;stroke:#4600ff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker3200)"
      d="M 234.47293,260.79639 267.53355,81.14623"
      id="path3190"
      inkscape:connector-curvature="0" />
@@ -890,7 +891,7 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="arrows"
-     style="display:inline">
+     style="display:none">
     <path
        style="fill:none;stroke:#b60000;stroke-width:1.18540466px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker4705)"
        d="m 292.65766,59.173816 97.53809,89.612504"
@@ -914,19 +915,19 @@
    id="tspan4406-5">706.7 nm</tspan></textPath></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:22.66666667px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;color-interpolation:auto;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;"
+       style="font-style:normal;font-weight:normal;font-size:22.66666603px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;color-interpolation:auto;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto"
        id="text4677-2"
        transform="rotate(-180,355.10251,226.64478)"><textPath
          xlink:href="#path4803"
          id="textPath5192"><tspan
-   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.66666667px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';"
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.66666603px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, '"
    id="tspan4675-7">1083.3 nm</tspan></textPath></text>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="wim"
-     style="display:inline">
+     style="display:none">
     <path
        style="fill:none;stroke:#240a00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker7792)"
        d="M 228.30541,265.78667 124.67535,226.95869"
@@ -935,14 +936,14 @@
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.66666731px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.66666794px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        id="text8102"
        x="-2"
        transform="rotate(-180,187.21755,248.91171)"><textPath
          xlink:href="#path7782"
          id="textPath8110"><tspan
    id="tspan8100"
-   style="font-size:22.66666731px;">1557 nm</tspan></textPath></text>
+   style="font-size:22.66666794px">1557 nm</tspan></textPath></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1000,10 +1001,10 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="lifetime"
-     style="display:inline">
+     style="display:none">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333333px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        x="238.64044"
        y="46.966682"
        id="text5870"><tspan
@@ -1050,12 +1051,12 @@
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.66666667px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.66666667px;line-height:1.25;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, ';letter-spacing:0px;word-spacing:0px;fill:#4600ff;fill-opacity:1;stroke:none;"
      id="text4083"
      y="-2"
      transform="translate(6,-48)"><textPath
        xlink:href="#path3190"
        id="textPath4091"><tspan
    id="tspan4081"
-   style="font-size:22.66666667px;">427.7 nm</tspan></textPath></text>
+   style="font-size:22.66666667px;fill:#4600ff;fill-opacity:1;">427.7 nm</tspan></textPath></text>
 </svg>

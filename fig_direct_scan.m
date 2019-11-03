@@ -3,6 +3,7 @@
 %drift model 'makima' pchip 'spline' 'nearest'?
 %plot drift model?
 plot_wm_model = 0;
+fun_type = 'lorenz';
 ylabel_str='\textbf{Scattered fraction (arb. units)}';
 xlabel_str='\textbf{\boldmath{\(f-f_{0,d}\)} (MHz)}';
 %set up the colors to use
@@ -139,4 +140,4 @@ fig.PaperPositionMode = 'auto';
 fig_pos = fig.PaperPosition;
 fig.PaperSize = [fig_pos(3) fig_pos(4)];
 
-print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')
+% print(fig,'C:\Users\kieran\Documents\MATLAB\Forbidden_Transition\figs\direct_scan','-dpdf')
