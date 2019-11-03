@@ -33,8 +33,8 @@ addpath(genpath_exclude(fullfile(this_folder,'dev'),'\.'))
 % % Setting up
 
 anal_opts=[]; %reset the options (would be good to clear all variables except the loop config
-% anal_opts.tdc_import.dir='Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190713_forbidden427_direct_det_narrow\';
-anal_opts.tdc_import.dir= 'Y:\TDC_user\ProgramFiles\my_read_tdc_gui_v1.0.1\dld_output\20190719_forbidden_Rf_none\'
+anal_opts.tdc_import.dir='Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190719_forbidden_Rf_1.75\';
+% anal_opts.tdc_import.dir= 'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden_Rf_2.25\';
 anal_opts.tdc_import.save_cache_in_data_dir=true;
 tmp_xlim=[-50e-3, 50e-3];    
 tmp_ylim=[-50e-3, 50e-3];
@@ -276,7 +276,7 @@ end
 data.mcp_tdc.ok.all=col_vec(data.mcp_tdc.num_counts)>2.5e3;
 data.signal.raw=[];
 offset = 0;
-data.signal.raw.val=col_vec((data.mcp_tdc.masked.num_counts-offset)./data.mcp_tdc.num_counts);% %./data.mcp_tdc.num_counts
+data.signal.raw.val=col_vec((data.mcp_tdc.masked.num_counts-offset));%./data.mcp_tdc.num_counts
 % data.signal.raw.val=col_vec(-data.mcp_tdc.masked.num_counts+data.mcp_tdc.num_counts.*0.1602-6.786e3);
 % data.signal.raw.val=col_vec(data.mcp_tdc.num_counts.*0.1602-6.786e3);
 %data.signal.raw.val=col_vec(data.mcp_tdc.masked.num_counts./data.mcp_tdc.masked.tot_num_counts);% %./data.mcp_tdc.num_counts
@@ -456,7 +456,7 @@ for signal_idx=1:tot_plots
     
     amp_guess=max(ydata);
     ydata_shifted =ydata-min(ydata);
-    mu_guess=-7.8;%wmean(xdata,ydata_shifted); %compute the weighted mean
+    mu_guess=6.8;%-7.8;%wmean(xdata,ydata_shifted); %compute the weighted mean
     %sig_guess=sqrt(nansum((xdata-mu_guess).^2.*ydata_shifted)/nansum(ydata_shifted)); %compute the mean square weighted deviation
     sig_guess=5;
     fo = statset('TolFun',10^-6,...
@@ -559,7 +559,7 @@ res_mdl =  corr_plot(int_num(freq_mask)./atom_num(freq_mask),res(freq_mask),ones
 ylabel('res')
 xlabel('atom num ratio')
 %%
-if true
+if false
 stfig('residual correlations removed');
 clf
 xdata = signal_unbinned.freq;

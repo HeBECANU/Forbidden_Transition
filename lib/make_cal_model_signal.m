@@ -111,7 +111,7 @@ end
 calibrated_signal.val=data.signal.raw.val*nan; %initalize
 calibrated_signal.unc=data.signal.raw.val*nan; %initalize
 
-calibrated_signal.val(probe_dat_mask)=(data.signal.raw.val(probe_dat_mask)-out.signal_cal_drift_model(time_probe))./data.incident_power(probe_dat_mask);
+calibrated_signal.val(probe_dat_mask)=(data.signal.raw.val(probe_dat_mask)-out.signal_cal_drift_model(time_probe));%./data.incident_power(probe_dat_mask);
 calibrated_signal.unc(probe_dat_mask)=data.signal.raw.unc(probe_dat_mask);
 
 out.calibrated_signal=calibrated_signal;
