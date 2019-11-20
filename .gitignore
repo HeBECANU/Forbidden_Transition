@@ -3,7 +3,7 @@
 # Windows thumb
 *.db
 # Data files
-#*.mat
+*.mat
 cache/
 # Data Archives
 *.zip

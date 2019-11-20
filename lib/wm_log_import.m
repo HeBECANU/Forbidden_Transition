@@ -1,49 +1,20 @@
-function wm=wm_log_import(opts)
+function wm_log=wm_log_import(wm_log_import_opts)
+cache_opts=[];
+cache_opts.verbose=2;
+%cache_opts.force_cache_load=wm_log_import_opts.force_load_save;
+%wm_log_import_opts=rmfield(wm_log_import_opts,'force_load_save');
+cache_opts.force_recalc=wm_log_import_opts.force_reimport;
+wm_log_import_opts=rmfield(wm_log_import_opts,'force_reimport');
 
-header({0,'Importing WM data'})
+cache_opts.mock_working_dir=wm_log_import_opts.dir;
 
-cache_opts = opts.wm.cache_import;
-cache_opts.verbose = 1;
-opts.wm.force_recalc = false;
-wm=simple_function_cache(cache_opts,@wm_log_import_core,{opts});
-
-
-if opts.wm.plots
-    wm_time = wm.feedback.posix_time;
-    t0 = min(wm_time);
-    wm_set = wm.feedback.setpt;
-    wm_act = wm.feedback.actual;
-    
-    f = sfigure(300);
-    clf
-    subplot(2,1,1)
-    plot(wm_time-t0,wm_set,'x')
-    hold on
-    plot(wm_time-t0,wm_act,'x')
-    xlabel('Time elapsed')
-    ylabel('WM blue setpt')
-    title('WM blue freq')
-    
-    subplot(2,1,2)
-    plot(wm_time-t0,wm_set-wm_act,'x')
-    title('WM error')
-    xlabel('Time elapsed')
-    ylabel('Set-actual freq')
-    
-    
-    suptitle('WM import diagnostics')
-    
-    
-    filename = fullfile(opts.wm.out_dir,sprintf('%s_log',mfilename));
-    saveas(f,[filename,'.fig']);
-    saveas(f,[filename,'.png']);
+cache_opts.save_compressed=true;%needed otherwise save takes a very long time
+cache_opts.path_directions={1,'dir'};
+outputs=function_cache(cache_opts,@wm_log_import_core,{wm_log_import_opts});
+wm_log=outputs{1};
 end
 
-header({1,'Done'})
-
-end
-
-function wm_log=wm_log_import_core(opts)
+function wm_log=wm_log_import_core(wm_log_import_opts)
 %read the json formated wm-laser logfile
 %the json is formated as {"posix_time":num,"iso_time":"2018-08-25T20:07:01.763","oper":{operation a structure}}
 %want to ingest into a structure
@@ -56,20 +27,21 @@ function wm_log=wm_log_import_core(opts)
 %with wm_log.feedback.time wm_log.feedback.set_wav
 wm_log=struct();
 add_to_struct=true;
-fprintf('Importing %u wavemeter-laser feedback log files',size(opts.wm.names,2))
-iimax=size(opts.wm.names,2);
+fprintf('importing %u wavemeter-laser feedback log files',size(wm_log_import_opts.names,2))
+iimax=size(wm_log_import_opts.names,2);
 for ii=1:iimax
-    path=strcat(opts.wm.dir,opts.wm.names{ii});
+    path=fullfile(wm_log_import_opts.dir,wm_log_import_opts.names{ii});
     fid = fopen(path,'r');
     wm_log_file_cells=textscan(fid,'%s','Delimiter','\n');
     fclose(fid);
-
+    %if ii~=1
+    %    clf
+    %    plot(wm_log.get_status.posix_time)
+    %    pause(1)
+    %end
     fprintf('\nFile %03u/%03u importing %03uk lines:%03uk',ii,iimax,round(size(wm_log_file_cells{1},1)*1e-3),0)
     %now process these lines and place the entries into a feild of the wm_log struct depending on the operation performed
     jjmax=size(wm_log_file_cells{1},1);
-    if ~isnan(opts.wm.num_logs)
-        jjmax = min(jjmax, opts.wm.num_logs);
-    end
     for jj=1:jjmax
         if mod(jj,1e4)==0,fprintf('\b\b\b\b%03uk',round(jj*1e-3)),end  %fprintf('\b\b\b\b%04u',jj)
         if ~isempty(wm_log_file_cells{1}{jj})
@@ -82,7 +54,7 @@ for ii=1:iimax
                 end
                 formated_line=jsondecode(line_tmp);
             catch
-                warning('json encode faiiled file %u line %u \n\n',ii,jj)
+                warning(sprintf('json encode faiiled file %u line %u \n\n',ii,jj))
                 fprintf('\nFile %03u/%03u importing %03uk lines:%03uk',ii,iimax,round(size(wm_log_file_cells{1},1)*1e-3),0)
                 add_to_struct=false;
             end
@@ -139,10 +111,10 @@ for ii=1:iimax
         end
     end
 end
-fprintf('\nCleaning up output structure...\n')
+fprintf('\nCleaning up output structure...')
 wm_log=clean_log_structure(wm_log,[]); %itteratively defined cleaner
-
-
+fprintf('Done\n')
+fprintf('Done wm import\n')
 
 end
 

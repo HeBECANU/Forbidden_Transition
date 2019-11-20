@@ -1,7 +1,7 @@
 function data = import_lv_log(opts)
     header({0,'Importing LV log...'})
     lv_log=[];
-    lv_log.dir = strcat(opts.lv.dir,'log_LabviewMatlab.txt');
+    lv_log.dir = fullfile(opts.labview.dir,'log_LabviewMatlab.txt');
     fid = fopen(lv_log.dir);
     lv_log.cell=textscan(fid,'%s','Delimiter','\n');
     fclose(fid);
@@ -38,7 +38,7 @@ function data = import_lv_log(opts)
     data.shot_class = lv_log.shot_class;
     header({1,'Done!'})
     
-    if opts.lv.plots
+    if opts.labview.plots
         t0 = min(data.time);
        
         f =  sfigure(200);
@@ -61,8 +61,12 @@ function data = import_lv_log(opts)
 
         suptitle('LabView log diagnostics')
         
-        filename = fullfile(opts.lv.out_dir,sprintf('%s_log',mfilename));
+        filename = fullfile(opts.labview.out_dir,sprintf('%s_log',mfilename));
         saveas(f,[filename,'.fig']);
         saveas(f,[filename,'.png']);
     end
+    
+    
+    
+    
 end
