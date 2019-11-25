@@ -10,10 +10,17 @@ if plot_wm_model
     stfig('wm drift model')
     clf
     hold on
-    plot(t_temp,offset_mdl)
-    scatter(wm_offset(:,1),2.*wm_offset(:,2),'kx')
-    ylabel('wavemetre offset (MHz)')
-    xlabel('Posix time (s)')
+    plot(t_temp/1e9,offset_mdl,'linewidth',1.5)
+    scatter(wm_offset(:,1)/1e9,2.*wm_offset(:,2),75,'kx')
+    ylabel('Wavemetre offset (MHz)','interpreter','latex')
+    xlabel('Posix time (\(10^9\)s)','interpreter','latex')
+    set(gca,'FontWeight','bold')
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'linewidth',1.5)
+set(gca,'fontsize',15)
+ax = gca;
+ax.XAxis.TickLabelFormat= '\\textbf{%g}';
+ax.YAxis.TickLabelFormat= '\\textbf{%g}';
     box on
     t_period = 3*30*3600;%seconds ie one hour
 n_period = floor(t_period*length(t_temp)/range(t_temp));

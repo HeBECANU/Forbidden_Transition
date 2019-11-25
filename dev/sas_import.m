@@ -99,9 +99,19 @@ w=1./data_b(:,4).^2;
 modelFun = @(b,x) b(1)+b(2).*x;%+b(3).*x.^2;
 start=[1,1];
 wnlm = fitnlm(x,y,modelFun,start,'Weight',w)
-xx=linspace(0,2000)';
+xx=linspace(0,2500)';
 stfig('bryce power dep data')
 clf
 hold on
-errorbar(data_b(:,1),data_b(:,3),2*log(2).*data_b(:,4),'kx')
-plot(xx,predict(wnlm,xx),'color','b')
+box on
+errorbar(data_b(:,1),data_b(:,3)-0.5989,4*log(4).*data_b(:,4),'k.')
+plot(xx,predict(wnlm,xx)-0.5989,'k--','linewidth',1.5)
+xlabel('Applied laser power ($\mu$W)','interpreter','latex')
+ylabel('Center frequency - \(f_r\) (MHz)','interpreter','latex')
+set(gca,'FontWeight','bold')
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'linewidth',1.5)
+set(gca,'fontsize',15)
+ax = gca;
+ax.XAxis.TickLabelFormat= '\\textbf{%g}';
+ax.YAxis.TickLabelFormat= '\\textbf{%g}';
