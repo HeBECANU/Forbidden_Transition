@@ -17,12 +17,13 @@ data = import_data(data_dirs);
 
 %% create drift model
 data.offset = wm_drift_model(data.time,wm_offset,plot_wm_model);
-
+% data.offset = zeros(size(data.offset));
 %% Apply ac stark shift
 % crete the ac stark shift model
 wnlm = ac_stark_shift(0);
 % generate the actual shift
 ac_gradient = wnlm.Coefficients.Estimate(2);
+% ac_gradient = 0;
 data.ac_shift = ac_gradient.*data.integrated_pd(data.is_shot_good);
 ac_err = wnlm.Coefficients.SE(1);
 
@@ -47,12 +48,13 @@ cs_cell_ac_shift = -1.88;
 cs_cell_ac_err = 0.43;
 % RF stark shift
 [no_RF_predict,no_RF_ci]= predict(wnlm,1.620427285097443e+01);
-RF_shift = no_RF_predict-5.41580230847063e+00;
-RF_err = sqrt(range(no_RF_ci).^2+0.5.^2);
+RF_shift = 0;%no_RF_predict-5.41580230847063e+00;
+RF_err = 0;%sqrt(range(no_RF_ci).^2+0.5.^2);
 total_shift = recoil_shift+Zeeman_shift+RF_shift+cs_cell_ac_shift
 % Calculate final value
 freq_val = predicted_freq+fit_coeff(2)-total_shift;
 freq_err = (fit_se(2)^2+RF_err^2+Zeeman_err^2+ac_err^2+wm_err^2+cs_cell_ac_err^2)^(1/2)
+det_shift = -1.715+6.9+0.94+0.273-1.9-2;
 %% Do shifts for heating freq
 freq_heating = 700939271.9;
 pd_int_heating = 18.9915;

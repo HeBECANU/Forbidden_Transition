@@ -23,7 +23,7 @@ anal_opts.global.qe=0.09;
 load('Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden427_overnight_heating_method\out\20190724T095142\data_results.mat')
 data.mcp_tdc = import_mcp_tdc_data(anal_opts.tdc_import);
 %%
-tlims = [0, 24.5];
+tlims = [0, 22.8];
 t_sig = 0.001;
 num_bins = 100000;
 counts_txy = data.mcp_tdc.counts_txy{1};
@@ -33,7 +33,7 @@ clf
 t = (t(1:end-1)+t(2:end))./2;
 data_gauss = gaussfilt(t,z,t_sig);
 % data_gauss = z;
-plot(t,data_gauss./anal_opts.global.qe.*96/288,'k-')
+plot(t-1.34,data_gauss./anal_opts.global.qe.*96/288,'k-')
 xlim(tlims)
 xlabel('Arrivial time (s)','fontsize',font_size_global,'interpreter','latex')
 ylabel('Count rate (kHz)','fontsize',font_size_global,'interpreter','latex')

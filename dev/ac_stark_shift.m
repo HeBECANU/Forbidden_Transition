@@ -40,7 +40,7 @@ errorbar(x.*3.261617320266882e1/20,y-offset,data(:,2),'k.', 'MarkerFaceColor', '
 hold on
 line(xx.*3.261617320266882e1/20,predict(wnlm,xx)-offset,'color','k')
 
-errorbar(x_RF.*3.261617320266882e1/20,y_RF-offset,data_no_RF(:,2),'bs', 'MarkerFaceColor', 'b');
+% errorbar(x_RF.*3.261617320266882e1/20,y_RF-offset,data_no_RF(:,2),'bs', 'MarkerFaceColor', 'b');
 set(gcf,'color','white')
 xlabel('Power of Probe Beam (mW)','interpreter','latex')
 ylabel('Center frequency - \(f_{r}\) (MHz)','interpreter','latex')
