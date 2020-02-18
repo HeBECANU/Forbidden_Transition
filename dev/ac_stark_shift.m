@@ -35,14 +35,22 @@ wnlm = fitnlm(x,y,modelFun,start,'Weight',w);
 xx=linspace(0,21)';
 if plot_model
 sfigure(8080)
-errorbar(x.*3.261617320266882e1/20,y,data(:,2),'ko');
+offset = wnlm.Coefficients.Estimate(1);
+errorbar(x.*3.261617320266882e1/20,y-offset,data(:,2),'k.', 'MarkerFaceColor', 'k');
 hold on
-line(xx.*3.261617320266882e1/20,predict(wnlm,xx),'color','k')
+line(xx.*3.261617320266882e1/20,predict(wnlm,xx)-offset,'color','k')
 
-errorbar(x_RF.*3.261617320266882e1/20,y_RF,data_no_RF(:,2),'bs');
+% errorbar(x_RF.*3.261617320266882e1/20,y_RF-offset,data_no_RF(:,2),'bs', 'MarkerFaceColor', 'b');
 set(gcf,'color','white')
-xlabel('Power of Probe Beam (mW)')
-ylabel('Center of Transitions - f_{ref} (MHz)')
+xlabel('Power of Probe Beam (mW)','interpreter','latex')
+ylabel('Center frequency - \(f_{r}\) (MHz)','interpreter','latex')
+set(gca,'FontWeight','bold')
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'linewidth',1.5)
+set(gca,'fontsize',15)
+ax = gca;
+ax.XAxis.TickLabelFormat= '\\textbf{%g}';
+ax.YAxis.TickLabelFormat= '\\textbf{%g}';
 %line(xx,predict(wnlm,xx),'color','bs')
 hold off
 %with ac shift 700939267.98±0.07
