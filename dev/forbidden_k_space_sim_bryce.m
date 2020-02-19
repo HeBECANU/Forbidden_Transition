@@ -18,11 +18,12 @@ global const
 %%
 
 in_opts.numsim=1e6;
-in_opts.do_plots=0;
+in_opts.do_plots=1;
 in_opts.rf_knife_freq=300e3;
 
 out=k_space_det_eff(in_opts)
 
+%detected count fraction 0.3581
 
 %%
 outs={};
