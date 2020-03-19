@@ -4,14 +4,12 @@
 Analysis code for an experimental measurment of the 427 nm 2<sup>3</sup>S<sub>1</sub> -- 3<sup>3</sup>S<sub>1</sub> highly forbidden transition in metastable helium.
 
 
-| ![Level Diagram of He*](/figs/level_scheme_v5.pdf "Fig1") | 
+| ![Level Diagram of He*](/figs/level_scheme_v5.png "Fig1") | 
 |:--:| 
 | **Figure 1**- Level diagram of He\* showing the forbidden 427nm transition.  |
 
 
 A write up of the results of this experiment can be found at https://arxiv.org/abs/2002.04811.
-
-The main results can be obtained from running the files ....
 
 | ![Direct detection scan*](/figs/direct_scan.png "Fig2") | 
 |:--:| 
