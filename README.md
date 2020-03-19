@@ -1,19 +1,23 @@
 # Forbidden_Transition
-**[Kieran F. Thomas](https://github.com/KF-Thomas), [Jacob A. Ross](https://github.com/GroundhogState),[Bryce M. Henson](https://github.com/brycehenson)**
+**[Kieran F. Thomas](https://github.com/KF-Thomas),  [Jacob A. Ross](https://github.com/GroundhogState),  [Bryce M. Henson](https://github.com/brycehenson)**
 
-Analysis code for an experimental measurment of the 427 2<sup>3</sup>S<sub>1</sub> -> 3<sup>3</sup>S<sub>1</sub> highly forbidden transition in metastable helium.
+Analysis code for an experimental measurment of the 427 nm 2<sup>3</sup>S<sub>1</sub> -> 3<sup>3</sup>S<sub>1</sub> highly forbidden transition in metastable helium.
 
 
 | ![Level Diagram of He*](/figs/level_scheme_v4.svg "Fig2") | 
 |:--:| 
-| **Figure1**- Level diagram of He\* showing the forbidden 427nm transition, modified from [J. Simonet, Optical traps for Ultracold Metastable Helium atoms. PhD thesis](https://tel.archives-ouvertes.fr/tel-00651592/file/Simonet_PhD_Thesis.pdf)   |
+| **Figure 1**- Level diagram of He\* showing the forbidden 427nm transition.  |
 
 
+A write up of the results of this experiment can be found at https://arxiv.org/abs/2002.04811.
 
-## TO Do
-- [ ] include core BEC as submodule for easy install
-- [ ] thing 2
+The main results can be obtained from running the files ....
 
+| ![Direct detection scan*](/figs/direct_scan.png "Fig2") | 
+|:--:| 
+| **Figure 2**- Normalised detected number of scattered atoms agains probe frequency, Fig. 3 in https://arxiv.org/abs/2002.04811.  |
+
+The results of the direct detection method showin in Figure 2 are produced with the file 'fig_direct_scan.m', while the center frequency can be calculated with 'calc_freq.m'. The Einstein A coefficent can be calculated from our data using the file 'calc_A.m', and the excited state lifetime of the 3<sup>3</sup>S<sub>1</sub> state can be derived from our data using the file 'calc_tau.m'.
 
 ## Install
 ``` 
@@ -23,6 +27,9 @@ then to update
 ```
 git submodule update --init --recursive --remote --merge
 ```
+
+## Running
+The code only requires MATLAB to run. Note that it does need all subdirectories to be added to the current path in order to exectue properly.
 
 ## Contributions  
 This project would not have been possible without the many open source tools that it is based on. In no particular order: 

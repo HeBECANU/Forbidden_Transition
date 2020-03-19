@@ -13,11 +13,11 @@ wm_offset = [
 ];
 
 %data directories we wish to use for the final graph and value
-data_dirs = {'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190713_forbidden427_direct_det_narrow\'
-    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det_narrow_dither_on\'
-    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190710_forbidden427_direct_det\'
-    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden_Rf_2.00\'
-    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190721_weekend_run\'
-    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190716_forbidden_Rf_2.05\'
-    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\20190715_forbidden_427_narrow_scan_missed\'
+data_dirs = {'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190713_forbidden427_direct_det_narrow\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190710_forbidden427_direct_det_narrow_dither_on\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190710_forbidden427_direct_det\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190716_forbidden_Rf_2.00\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190721_weekend_run\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190716_forbidden_Rf_2.05\'
+    'Z:\EXPERIMENT-DATA\2019_Forbidden_Transition\main_data\20190715_forbidden_427_narrow_scan_missed\'
     };

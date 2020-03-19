@@ -1,4 +1,4 @@
-%% Data analysis for Helium forbidden transition spectroscopy
+%% Data analysis for Helium forbidden transition spectroscopy using direct detection method
 %% To do
 % - Remove correlations to atom number []
 % - reintroduce ai import [x]

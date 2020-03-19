@@ -1,3 +1,5 @@
+%% Data analysis for Helium forbidden transition spectroscopy using direct detection method
+% note this version can run over multiple directories
 % anal_opts.tdc_import.dir=;
 clear all
 

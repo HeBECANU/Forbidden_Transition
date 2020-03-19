@@ -1,4 +1,4 @@
-%% Data analysis for Helium forbidden transition spectroscopy
+%% Data analysis for Helium forbidden transition spectroscopy using heating method
 
 % clear all;
 % Remove old data dirs from path

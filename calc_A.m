@@ -1,4 +1,4 @@
-%A value calculator
+%% Einstein A value calculator
 clear all
 %constants
 clear const

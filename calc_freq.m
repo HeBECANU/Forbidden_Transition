@@ -1,4 +1,4 @@
-%calculates frequency center of transition (including all shifts)
+%% calculates frequency center of transition (including all shifts)
 clear all
 %analysis options
 %drift model 'makima' pchip 'spline' 'nearest'?
