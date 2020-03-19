@@ -4,7 +4,7 @@
 Attempting to measure the 427 2^3 S_1 -> 3^3 S_1 highly forbidden transition in metastable helium.
 
 
-| ![Level Diagram of He*](/figs/level_diagram.png "Fig2") | 
+| ![Level Diagram of He*](/figs/level_scheme_v4 "Fig2") | 
 |:--:| 
 | **Figure1**- Level diagram of He\* showing the forbidden 427nm transition, modified from [J. Simonet, Optical traps for Ultracold Metastable Helium atoms. PhD thesis](https://tel.archives-ouvertes.fr/tel-00651592/file/Simonet_PhD_Thesis.pdf)   |
 
