@@ -18,6 +18,7 @@ data = import_data(data_dirs);
 %% create drift model
 data.offset = wm_drift_model(data.time,wm_offset,plot_wm_model);
 % data.offset = zeros(size(data.offset));
+return
 %% Apply ac stark shift
 % crete the ac stark shift model
 wnlm = ac_stark_shift(0);
